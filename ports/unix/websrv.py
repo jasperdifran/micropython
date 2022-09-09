@@ -1,4 +1,5 @@
 from phew import server
+import json
 
 @server.route("/simple", methods=["GET"])
 def simple_request(request):
@@ -22,8 +23,18 @@ def simple_request(request):
 @server.route("/get_simple", methods=["GET"])
 def simple_request(request):
     import http_lib
-    res = http_lib.http_get('https://catfact.ninja/fact')
-    return res
+    res = http_lib.get_req('https://api.agify.io/?name=meelad')
+    res_dict = json.loads(res)
+    s = f"""
+    <html>
+        <body>
+            <h1>{res_dict['name']}</h1>
+            <h2>{res_dict['age']}</h2>
+        </body>
+    </html>
+    """
+
+    return s
 
 @server.catchall()
 def catchall(request):
