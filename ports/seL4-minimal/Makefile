@@ -1,8 +1,6 @@
 include ../../py/mkenv.mk
 
 CROSS = 0
-TOP = ../../
-BUILD = build
 
 # qstr definitions (must come before including py.mk)
 QSTR_DEFS = qstrdefsport.h
@@ -54,16 +52,14 @@ LDFLAGS += $(LDFLAGS_MOD)
 
 LIBS =
 
-
 SRC_C = \
 	main.c \
-	modmyport.c \
 	uart_core.c \
 	shared/libc/printf.c \
 	shared/readline/readline.c \
 	shared/runtime/pyexec.c \
 	shared/runtime/stdout_helpers.c \
-	$(BUILD)/_frozen_mpy.c \
+	# $(BUILD)/_frozen_mpy.c \
 
 ifeq ($(CROSS), 1)
 SRC_C += shared/libc/string0.c
@@ -75,11 +71,8 @@ SRC_CXX += $(SRC_MOD_CXX)
 
 SRC_QSTR += shared/readline/readline.c shared/runtime/pyexec.c
 SRC_QSTR += $(SRC_MOD) $(SRC_MOD_CXX)
-SRC_QSTR += modmyport.c 
 
-OBJ += $(PY_CORE_O) 
-OBJ += $(addprefix $(BUILD)/, $(SRC_C:.c=.o))
-OBJ += $(addprefix $(BUILD)/, $(LIB_SRC_C:.c=.o))
+OBJ += $(PY_CORE_O) $(addprefix $(BUILD)/, $(SRC_C:.c=.o))
 OBJ += $(addprefix $(BUILD)/, $(SRC_CXX:.cpp=.o))
 
 ifeq ($(CROSS), 1)
@@ -88,9 +81,9 @@ else
 all: $(BUILD)/firmware.elf
 endif
 
-$(BUILD)/_frozen_mpy.c: webserver.mpy $(BUILD)/genhdr/qstrdefs.generated.h
-	$(ECHO) "MISC freezing bytecode"
-	$(Q)$(TOP)/tools/mpy-tool.py -f -q $(BUILD)/genhdr/qstrdefs.preprocessed.h -mlongint-impl=none $< > $@
+# $(BUILD)/_frozen_mpy.c: frozentest.mpy $(BUILD)/genhdr/qstrdefs.generated.h
+# 	$(ECHO) "MISC freezing bytecode"
+# 	$(Q)$(TOP)/tools/mpy-tool.py -f -q $(BUILD)/genhdr/qstrdefs.preprocessed.h -mlongint-impl=none $< > $@
 
 $(BUILD)/firmware.elf: $(OBJ)
 	$(ECHO) "LINK $@"
@@ -115,8 +108,5 @@ run:
 	  $(BUILD)/firmware.elf; \
 	  echo "Exit status: $$?"; \
 	  stty $$saved_
-
-test: $(BUILD)/firmware.elf
-	$(Q)/bin/echo -e "print('hello world!', list(x+1 for x in range(10)), end='eol\\\\n')\\r\\n\\x04" | $(BUILD)/firmware.elf | tail -n2 | grep "^hello world! \\[1, 2, 3, 4, 5, 6, 7, 8, 9, 10\\]eol"
 
 include $(TOP)/py/mkrules.mk

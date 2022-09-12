@@ -1,5 +1,2 @@
-import othm
-
-print("This is our webserver")
-
-othm.sayHi("Sally")
+def somefunc():
+    print("This is our webserver")

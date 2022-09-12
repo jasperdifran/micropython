@@ -15,17 +15,29 @@
 #define MICROPY_HELPER_REPL               (1)
 #define MICROPY_MODULE_FROZEN_MPY         (1)
 #define MICROPY_ENABLE_EXTERNAL_IMPORT    (1)
+#define MICROPY_MODULE_OVERRIDE_MAIN_IMPORT (1)
 
 #define MICROPY_MODULE_WEAK_LINKS               (1)
+#define MICROPY_PY_SYS_EXC_INFO     (1)
+// #define MICROPY_COMP_MODULE_CONST               (1)
+#define MICROPY_PY_URANDOM                      (1)
+
+#define MICROPY_PY_SYS_PATH_DEFAULT ".frozen:~/.micropython/lib:/usr/lib/micropython"
 
 // Fine control over Python builtins, classes, modules, etc.
-// #define MICROPY_PY_ASYNC_AWAIT                  (1)
-// #define MICROPY_PY_BUILTINS_SET                 (1)
-// #define MICROPY_PY_ATTRTUPLE                    (1)
-// #define MICROPY_PY_COLLECTIONS                  (1)
-#define MICROPY_PY_MATH                         (1)
-// #define MICROPY_PY_IO                           (1)
-// #define MICROPY_PY_STRUCT                       (1)
+#define MICROPY_PY_FSTRINGS                     (1)
+#define MICROPY_PY_SYS                         (1)
+// #define MICROPY_PY_BUILTINS_BYTES_HEX           (1)
+// #define MICROPY_PY_BUILTINS_STR_UNICODE         (1)
+// #define MICROPY_PY_BUILTINS_STR_CENTER          (1)
+// #define MICROPY_PY_BUILTINS_STR_PARTITION       (1)
+// #define MICROPY_PY_BUILTINS_STR_SPLITLINES      (1)
+// #define MICROPY_PY_BUILTINS_MEMORYVIEW          (1)
+// #define MICROPY_PY_BUILTINS_SLICE_ATTRS         (1)
+// #define MICROPY_PY_BUILTINS_SLICE_INDICES       (1)
+// #define MICROPY_PY_BUILTINS_FROZENSET           (1)
+// #define MICROPY_PY_BUILTINS_ROUND_INT           (1)
+
 
 #define MICROPY_ALLOC_PATH_MAX            (256 * 16)
 #define MICROPY_ALLOC_PARSE_CHUNK_INIT    (64)
