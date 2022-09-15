@@ -32,7 +32,7 @@ static char *stack_top;
 static char heap[2048 * 8];
 #endif
 
-int main(int argc, char **argv) {
+int websrv_entry(void) {
     int stack_dummy;
     stack_top = (char *)&stack_dummy;
 
@@ -50,9 +50,9 @@ int main(int argc, char **argv) {
         }
     }
     #else
-    pyexec_friendly_repl();
+    // pyexec_friendly_repl();
     #endif
-    // do_str("print('hello world!', list(x+1 for x in range(10)), end='eol\\n')", MP_PARSE_SINGLE_INPUT);
+    do_str("print('hello world!', list(x+1 for x in range(10)), end='eol\\n')", MP_PARSE_SINGLE_INPUT);
     // do_str("for i in range(10):\r\n  print(i)", MP_PARSE_FILE_INPUT);
     #else
     // pyexec_frozen_module("frozentest.py");

@@ -27,8 +27,8 @@ CFLAGS = $(INC) -Wall -Werror -std=c99 -nostdlib $(CFLAGS_CORTEX_M4) $(COPT)
 LDFLAGS = -nostdlib -T stm32f405.ld -Map=$@.map --cref --gc-sections
 else
 LD = gcc
-CFLAGS = $(INC) -Wall -Werror -Wdouble-promotion -Wfloat-conversion -std=c99 $(COPT)
-LDFLAGS = -Wl,-Map=$@.map,--cref -Wl,--gc-sections
+CFLAGS = $(INC)  -Wall -Werror -Wdouble-promotion -Wfloat-conversion -std=c99 $(COPT)
+LDFLAGS = -Wl,-Map=$@.map,--cref -Wl,--gc-sections,-shared,-ffreestanding
 endif
 
 CSUPEROPT = -Os # save some code space
@@ -78,24 +78,25 @@ OBJ += $(addprefix $(BUILD)/, $(SRC_CXX:.cpp=.o))
 ifeq ($(CROSS), 1)
 all: $(BUILD)/firmware.dfu
 else
-all: $(BUILD)/firmware.elf
+all: $(BUILD)/websrv.elf
 endif
 
 # $(BUILD)/_frozen_mpy.c: frozentest.mpy $(BUILD)/genhdr/qstrdefs.generated.h
 # 	$(ECHO) "MISC freezing bytecode"
 # 	$(Q)$(TOP)/tools/mpy-tool.py -f -q $(BUILD)/genhdr/qstrdefs.preprocessed.h -mlongint-impl=none $< > $@
 
-$(BUILD)/firmware.elf: $(OBJ)
+$(BUILD)/websrv.elf: $(OBJ)
 	$(ECHO) "LINK $@"
+	$(ECHO) "LIBS $(LIBS), LDFLAGS $(LDFLAGS)"
 	$(Q)$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
 	$(Q)$(SIZE) $@
 
-$(BUILD)/firmware.bin: $(BUILD)/firmware.elf
-	$(Q)$(OBJCOPY) -O binary -j .isr_vector -j .text -j .data $^ $(BUILD)/firmware.bin
+# $(BUILD)/firmware.bin: $(BUILD)/firmware.elf
+# 	$(Q)$(OBJCOPY) -O binary -j .isr_vector -j .text -j .data $^ $(BUILD)/firmware.bin
 
-$(BUILD)/firmware.dfu: $(BUILD)/firmware.bin
-	$(ECHO) "Create $@"
-	$(Q)$(PYTHON) $(DFU) -b 0x08000000:$(BUILD)/firmware.bin $@
+# $(BUILD)/firmware.dfu: $(BUILD)/firmware.bin
+# 	$(ECHO) "Create $@"
+# 	$(Q)$(PYTHON) $(DFU) -b 0x08000000:$(BUILD)/firmware.bin $@
 
 deploy: $(BUILD)/firmware.dfu
 	$(ECHO) "Writing $< to the board"
