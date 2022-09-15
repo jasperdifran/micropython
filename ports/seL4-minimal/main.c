@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <websrvint.h>
 
 #include "py/builtin.h"
 #include "py/compile.h"
@@ -32,7 +33,8 @@ static char *stack_top;
 static char heap[2048 * 8];
 #endif
 
-int websrv_entry(void) {
+void run_webserver(void) {
+    imx_putc('a');
     int stack_dummy;
     stack_top = (char *)&stack_dummy;
 
@@ -58,7 +60,7 @@ int websrv_entry(void) {
     // pyexec_frozen_module("frozentest.py");
     #endif
     mp_deinit();
-    return 0;
+    return;
 }
 
 #if MICROPY_ENABLE_GC

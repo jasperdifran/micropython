@@ -18,13 +18,14 @@ endif
 INC += -I.
 INC += -I$(TOP)
 INC += -I$(BUILD)
+INC += -Iinclude
 
 ifeq ($(CROSS), 1)
 DFU = $(TOP)/tools/dfu.py
 PYDFU = $(TOP)/tools/pydfu.py
 # CFLAGS_CORTEX_M4 = -mthumb -mtune=cortex-m4 -mcpu=cortex-m4 -msoft-float -fsingle-precision-constant -Wdouble-promotion -Wfloat-conversion
 CFLAGS = $(INC) -Wall -Werror -std=c99 -fPIC -nostdlib $(COPT) #$(CFLAGS_CORTEX_M4)
-LDFLAGS = -nostdlib -Map=$@.map --cref --gc-sections -fPIC -shared -ffreestanding 
+LDFLAGS = -nostdlib -r #-fPIC # -shared -ffreestanding 
 else
 LD = gcc
 CFLAGS = $(INC)  -Wall -Werror -Wdouble-promotion -Wfloat-conversion -std=c99 $(COPT)
@@ -75,15 +76,16 @@ SRC_QSTR += $(SRC_MOD) $(SRC_MOD_CXX)
 OBJ += $(PY_CORE_O) $(addprefix $(BUILD)/, $(SRC_C:.c=.o))
 OBJ += $(addprefix $(BUILD)/, $(SRC_CXX:.cpp=.o))
 
-all: $(BUILD)/websrv.elf
+all: $(BUILD)/websrv.o
 
 # $(BUILD)/_frozen_mpy.c: frozentest.mpy $(BUILD)/genhdr/qstrdefs.generated.h
 # 	$(ECHO) "MISC freezing bytecode"
 # 	$(Q)$(TOP)/tools/mpy-tool.py -f -q $(BUILD)/genhdr/qstrdefs.preprocessed.h -mlongint-impl=none $< > $@
 
-$(BUILD)/websrv.elf: $(OBJ)
+$(BUILD)/websrv.o: $(OBJ)
 	$(ECHO) "LINK $@"
 	$(ECHO) "LIBS $(LIBS), LDFLAGS $(LDFLAGS)"
+	$(ECHO) "OBJ $(OBJ)"
 	$(Q)$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
 	$(Q)$(SIZE) $@
 
