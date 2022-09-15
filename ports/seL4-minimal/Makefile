@@ -12,7 +12,7 @@ MICROPY_ROM_TEXT_COMPRESSION ?= 1
 include $(TOP)/py/py.mk
 
 ifeq ($(CROSS), 1)
-CROSS_COMPILE ?= arm-none-eabi-
+CROSS_COMPILE ?= aarch64-none-elf-
 endif
 
 INC += -I.
@@ -22,9 +22,9 @@ INC += -I$(BUILD)
 ifeq ($(CROSS), 1)
 DFU = $(TOP)/tools/dfu.py
 PYDFU = $(TOP)/tools/pydfu.py
-CFLAGS_CORTEX_M4 = -mthumb -mtune=cortex-m4 -mcpu=cortex-m4 -msoft-float -fsingle-precision-constant -Wdouble-promotion -Wfloat-conversion
-CFLAGS = $(INC) -Wall -Werror -std=c99 -nostdlib $(CFLAGS_CORTEX_M4) $(COPT)
-LDFLAGS = -nostdlib -T stm32f405.ld -Map=$@.map --cref --gc-sections
+# CFLAGS_CORTEX_M4 = -mthumb -mtune=cortex-m4 -mcpu=cortex-m4 -msoft-float -fsingle-precision-constant -Wdouble-promotion -Wfloat-conversion
+CFLAGS = $(INC) -Wall -Werror -std=c99 -fPIC -nostdlib $(COPT) #$(CFLAGS_CORTEX_M4)
+LDFLAGS = -nostdlib -Map=$@.map --cref --gc-sections -fPIC -shared -ffreestanding 
 else
 LD = gcc
 CFLAGS = $(INC)  -Wall -Werror -Wdouble-promotion -Wfloat-conversion -std=c99 $(COPT)
@@ -75,11 +75,7 @@ SRC_QSTR += $(SRC_MOD) $(SRC_MOD_CXX)
 OBJ += $(PY_CORE_O) $(addprefix $(BUILD)/, $(SRC_C:.c=.o))
 OBJ += $(addprefix $(BUILD)/, $(SRC_CXX:.cpp=.o))
 
-ifeq ($(CROSS), 1)
-all: $(BUILD)/firmware.dfu
-else
 all: $(BUILD)/websrv.elf
-endif
 
 # $(BUILD)/_frozen_mpy.c: frozentest.mpy $(BUILD)/genhdr/qstrdefs.generated.h
 # 	$(ECHO) "MISC freezing bytecode"
