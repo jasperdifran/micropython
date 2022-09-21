@@ -34,7 +34,6 @@ static char heap[2048 * 8];
 #endif
 
 void run_webserver(void) {
-    imx_putc('a');
     int stack_dummy;
     stack_top = (char *)&stack_dummy;
 
@@ -52,12 +51,13 @@ void run_webserver(void) {
         }
     }
     #else
-    // pyexec_friendly_repl();
+    pyexec_friendly_repl();
     #endif
     do_str("print('hello world!', list(x+1 for x in range(10)), end='eol\\n')", MP_PARSE_SINGLE_INPUT);
-    // do_str("for i in range(10):\r\n  print(i)", MP_PARSE_FILE_INPUT);
+    do_str("for i in range(10):\r\n  print(i)", MP_PARSE_FILE_INPUT);
+    pyexec_file_if_exists("tester.py");
     #else
-    // pyexec_frozen_module("frozentest.py");
+    pyexec_frozen_module("frozentest.py");
     #endif
     mp_deinit();
     return;
