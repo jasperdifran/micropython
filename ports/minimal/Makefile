@@ -59,7 +59,12 @@ SRC_C = \
 	shared/readline/readline.c \
 	shared/runtime/pyexec.c \
 	shared/runtime/stdout_helpers.c \
-	$(BUILD)/_frozen_mpy.c \
+	# $(BUILD)/_frozen_mpy.c \
+
+SRC_C += \
+    shared/memzip/import.c \
+    shared/memzip/lexermemzip.c \
+    shared/memzip/memzip.c \
 
 ifeq ($(CROSS), 1)
 SRC_C += shared/libc/string0.c
@@ -72,6 +77,12 @@ SRC_CXX += $(SRC_MOD_CXX)
 SRC_QSTR += shared/readline/readline.c shared/runtime/pyexec.c
 SRC_QSTR += $(SRC_MOD) $(SRC_MOD_CXX)
 
+OBJ += $(BUILD)/memzip-files.o
+
+MEMZIP_DIR := ./subfiles
+
+MAKE_MEMZIP = ../../shared/memzip/make-memzip.py
+
 OBJ += $(PY_CORE_O) $(addprefix $(BUILD)/, $(SRC_C:.c=.o))
 OBJ += $(addprefix $(BUILD)/, $(SRC_CXX:.cpp=.o))
 
@@ -80,6 +91,13 @@ all: $(BUILD)/firmware.dfu
 else
 all: $(BUILD)/firmware.elf
 endif
+
+$(BUILD)/memzip-files.o: $(BUILD)/memzip-files.c
+    $(call compile_c)
+
+$(BUILD)/memzip-files.c: $(shell find ${MEMZIP_DIR} -type f)
+	$(ECHO) "Creating $@"
+	$(Q)$(PYTHON) $(MAKE_MEMZIP) --zip-file $(BUILD)/memzip-files.zip --c-file $@ $(MEMZIP_DIR)
 
 $(BUILD)/_frozen_mpy.c: frozentest.mpy $(BUILD)/genhdr/qstrdefs.generated.h
 	$(ECHO) "MISC freezing bytecode"

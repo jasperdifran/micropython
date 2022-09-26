@@ -50,12 +50,13 @@ int main(int argc, char **argv) {
         }
     }
     #else
-    pyexec_friendly_repl();
+    // pyexec_friendly_repl();
     #endif
     // do_str("print('hello world!', list(x+1 for x in range(10)), end='eol\\n')", MP_PARSE_SINGLE_INPUT);
     // do_str("for i in range(10):\r\n  print(i)", MP_PARSE_FILE_INPUT);
+    pyexec_file_if_exists("tester.py");
     #else
-    pyexec_frozen_module("frozentest.py");
+    // pyexec_frozen_module("frozentest.py");
     #endif
     mp_deinit();
     return 0;
@@ -73,13 +74,13 @@ void gc_collect(void) {
 }
 #endif
 
-mp_lexer_t *mp_lexer_new_from_file(const char *filename) {
-    mp_raise_OSError(MP_ENOENT);
-}
+// mp_lexer_t *mp_lexer_new_from_file(const char *filename) {
+//     mp_raise_OSError(MP_ENOENT);
+// }
 
-mp_import_stat_t mp_import_stat(const char *path) {
-    return MP_IMPORT_STAT_NO_EXIST;
-}
+// mp_import_stat_t mp_import_stat(const char *path) {
+//     return MP_IMPORT_STAT_NO_EXIST;
+// }
 
 void nlr_jump_fail(void *val) {
     while (1) {
