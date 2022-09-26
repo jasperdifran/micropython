@@ -78,17 +78,17 @@ SRC_CXX += $(SRC_MOD_CXX)
 SRC_QSTR += shared/readline/readline.c shared/runtime/pyexec.c
 SRC_QSTR += $(SRC_MOD) $(SRC_MOD_CXX)
 
+OBJ += $(BUILD)/memzip-files.o
+
 OBJ += $(PY_CORE_O) $(addprefix $(BUILD)/, $(SRC_C:.c=.o))
 OBJ += $(addprefix $(BUILD)/, $(SRC_CXX:.cpp=.o))
-
-
-OBJ += $(BUILD)/memzip-files.o
 
 MEMZIP_DIR := ./subfiles
 
 MAKE_MEMZIP = ../../shared/memzip/make-memzip.py
 
 all: $(BUILD)/websrv.o
+
 
 # $(BUILD)/_frozen_mpy.c: frozentest.mpy $(BUILD)/genhdr/qstrdefs.generated.h
 # # 	$(ECHO) "MISC freezing bytecode"
@@ -108,6 +108,13 @@ $(BUILD)/websrv.o: $(OBJ)
 	$(Q)$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
 	$(Q)$(SIZE) $@
 
+# $(BUILD)/websrv.elf: $(OBJ)
+# 	$(ECHO) "LINK $@"
+# 	$(ECHO) "LIBS $(LIBS), LDFLAGS $(LDFLAGS)"
+# 	$(ECHO) "OBJ $(OBJ)"
+# 	$(Q)$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
+# 	$(Q)$(SIZE) $@
+
 # $(BUILD)/firmware.bin: $(BUILD)/firmware.elf
 # 	$(Q)$(OBJCOPY) -O binary -j .isr_vector -j .text -j .data $^ $(BUILD)/firmware.bin
 
@@ -123,7 +130,7 @@ deploy: $(BUILD)/firmware.dfu
 run:
 	@saved_=`stty -g`; \
 	  stty raw opost -echo; \
-	  $(BUILD)/firmware.elf; \
+	  $(BUILD)/websrv.elf; \
 	  echo "Exit status: $$?"; \
 	  stty $$saved_
 
