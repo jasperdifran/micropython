@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "py/lexer.h"
+#include "py/builtin.h"
 #include "memzip.h"
 
 mp_import_stat_t mp_import_stat(const char *path) {

@@ -27,21 +27,21 @@ def create_zip(zip_filename, zip_dir):
 def create_c_from_file(c_filename, zip_filename):
     with open(zip_filename, 'rb') as zip_file:
         with open(c_filename, 'wb') as c_file:
-            print('#include <stdint.h>', file=c_file)
-            print('', file=c_file)
-            print('const uint8_t memzip_data[] = {', file=c_file)
+            c_file.write(b'#include <stdint.h>\n')
+            c_file.write(b'\n')
+            c_file.write(b'const uint8_t memzip_data[] = {\n')
             while True:
                 buf = zip_file.read(16)
                 if not buf:
                     break
-                print('   ', end='', file=c_file)
+                c_file.write(b'   \n')
                 for byte in buf:
-                    if type(byte) is types.StringType:
-                        print(' 0x{:02x},'.format(ord(byte)), end='', file=c_file)
+                    if type(byte) is str:
+                        c_file.write(' 0x{:02x},'.format(ord(byte)).encode())
                     else:
-                        print(' 0x{:02x},'.format(byte), end='', file=c_file)
-                print('', file=c_file)
-            print('};', file=c_file)
+                        c_file.write(' 0x{:02x},'.format(byte).encode())
+                c_file.write(b'\n')
+            c_file.write(b'};\n')
 
 def main():
     parser = argparse.ArgumentParser(

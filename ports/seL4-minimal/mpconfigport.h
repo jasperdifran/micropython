@@ -21,6 +21,8 @@
 
 #define MICROPY_ALLOC_PATH_MAX            (256)
 #define MICROPY_ALLOC_PARSE_CHUNK_INIT    (16)
+#define MICROPY_MODULE_OVERRIDE_MAIN_IMPORT (1)
+
 
 // type definitions for the specific machine
 
