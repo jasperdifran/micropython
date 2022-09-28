@@ -16,8 +16,14 @@
 #define MICROPY_HELPER_REPL               (1)
 // #define MICROPY_MODULE_FROZEN_MPY         (1)
 #define MICROPY_PY_CMATH                        (1)
-#define MICROPY_PY_UOS                    (1)
+// #define MICROPY_PY_UOS                    (1)
 #define MICROPY_ENABLE_EXTERNAL_IMPORT    (1)
+// #define MICROPY_PY_SYS_STDFILES            (1)
+#define MICROPY_PY_FSTRINGS         (1) 
+#define MICROPY_PY_SYS              (1)
+// #define MICROPY_PY_UASYNCIO         (1)
+// #define MICROPY_PY_SOCKET           (1)
+
 
 #define MICROPY_ALLOC_PATH_MAX            (256)
 #define MICROPY_ALLOC_PARSE_CHUNK_INIT    (16)

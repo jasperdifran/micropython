@@ -17,6 +17,10 @@
 // #define MICROPY_MODULE_FROZEN_MPY         (0)
 #define MICROPY_PY_CMATH                        (1)
 #define MICROPY_PY_UOS                    (1)
+#define MICROPY_PY_SYS                    (1)
+#define MICROPY_VFS                         (1)
+#define MICROPY_PY_IO                        (1)  
+
 #define MICROPY_ENABLE_EXTERNAL_IMPORT    (1)
 
 #define MICROPY_ALLOC_PATH_MAX            (256)
