@@ -21,6 +21,9 @@
 // #define MICROPY_PY_SYS_STDFILES            (1)
 #define MICROPY_PY_FSTRINGS         (1) 
 #define MICROPY_PY_SYS              (1)
+#define MICROPY_PY_BUILTINS_BYTEARRAY   (1)
+#define MICROPY_PY_BUILTINS_SLICE   (1)
+#define MICROPY_CPYTHON_COMPAT      (1)
 // #define MICROPY_PY_UASYNCIO         (1)
 // #define MICROPY_PY_SOCKET           (1)
 
