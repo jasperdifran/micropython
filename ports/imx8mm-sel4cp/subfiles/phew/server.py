@@ -253,7 +253,6 @@ def handle_request(reader, writer):
   elif catchall_handler:
     response = catchall_handler(request)
 
-
   # if shorthand body generator only notation used then convert to tuple
   if type(response).__name__ == "generator":
     response = (response,)
@@ -262,7 +261,6 @@ def handle_request(reader, writer):
   # if shorthand body text only notation used then convert to tuple
   if isinstance(response, str):
     response = (response,)
-
 
   # if shorthand tuple notation used then build full response object
   if isinstance(response, tuple):

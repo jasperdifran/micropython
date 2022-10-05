@@ -30,12 +30,16 @@ void do_str(const char *src, mp_parse_input_kind_t input_kind) {
 
 static char *stack_top;
 #if MICROPY_ENABLE_GC
-static char heap[2048 * 8];
+static char heap[2048 * 32];
 #endif
 
-void run_webserver(void) {
+/* Buffer for us to read from and write to */
+char *data_buf;
+
+void run_webserver(char *websrv_buf) {
     int stack_dummy;
     stack_top = (char *)&stack_dummy;
+    data_buf = websrv_buf;
 
     gc_init(heap, heap + sizeof(heap));
     mp_init();
