@@ -27,6 +27,10 @@ void do_str(const char *src, mp_parse_input_kind_t input_kind) {
 }
 #endif
 
+
+char data_buf_backer[100];
+char *data_buf = (char *)data_buf_backer;
+
 static char *stack_top;
 #if MICROPY_ENABLE_GC
 static char heap[2048 * 32];
