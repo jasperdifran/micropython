@@ -10,6 +10,11 @@ def basic(request):
 def hello(request):
   return "Hello, world!", 200, "text/html"
 
+# catchall example
+@server.catchall()
+def catchall(request):
+  return "Not found", 404
+
 from phew.stream import Reader, Writer
 from phew.server import handle_request
 

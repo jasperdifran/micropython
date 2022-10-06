@@ -269,9 +269,9 @@ def handle_request(reader, writer):
     content_type = response[2] if len(response) >= 3 else "text/html"
     response = Response(body, status=status)
     response.add_header("Content-Length", len(body))
-    response.add_header("Content-Type", content_type)
-    # if hasattr(body, '__len__'):
-  
+    if hasattr(body, '__len__'):
+      response.add_header("Content-Type", content_type)
+
   # write status line
   status_message = status_message_map.get(response.status, "Unknown")
   writer.write(f"HTTP/1.1 {response.status} {status_message}\r\n".encode("utf-8"))
