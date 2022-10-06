@@ -21,6 +21,7 @@
 #define MICROPY_PY_BUILTINS_SLICE   (1)
 #define MICROPY_CPYTHON_COMPAT      (1)
 #define MICROPY_PY_CPRINGBUF        (1)
+#define MICROPY_PY_CPFS           (1)
 
 #define MICROPY_ENABLE_EXTERNAL_IMPORT    (1)
 

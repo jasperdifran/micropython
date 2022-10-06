@@ -60,6 +60,7 @@ SRC_C = \
 	shared/runtime/pyexec.c \
 	shared/runtime/stdout_helpers.c \
 	modcpringbuf.c \
+	modcpfs.c \
 
 SRC_C += \
     shared/memzip/import.c \
@@ -74,7 +75,7 @@ SRC_C += $(SRC_MOD)
 
 SRC_CXX += $(SRC_MOD_CXX)
 
-SRC_QSTR += shared/readline/readline.c shared/runtime/pyexec.c modcpringbuf.c
+SRC_QSTR += shared/readline/readline.c shared/runtime/pyexec.c modcpringbuf.c modcpfs.c
 SRC_QSTR += $(SRC_MOD) $(SRC_MOD_CXX)
 
 OBJ += $(BUILD)/memzip-files.o

@@ -268,9 +268,9 @@ def handle_request(reader, writer):
     status = response[1] if len(response) >= 2 else 200
     content_type = response[2] if len(response) >= 3 else "text/html"
     response = Response(body, status=status)
+    response.add_header("Content-Type", content_type)
+    # if hasattr(body, '__len__'):
     response.add_header("Content-Length", len(body))
-    if hasattr(body, '__len__'):
-      response.add_header("Content-Type", content_type)
 
   # write status line
   status_message = status_message_map.get(response.status, "Unknown")
@@ -300,7 +300,12 @@ def handle_request(reader, writer):
   #     await writer.drain()
   # else:
   #   # string/bytes
-  writer.write(response.body.encode("ascii"))
+  
+  if isinstance(response.body, str):
+    writer.write(response.body.encode("utf-8"))
+  elif isinstance(response.body, bytes):
+    writer.write(response.body)
+  # writer.write(response.body.encode("ascii"))
   
   # processing_time = time.ticks_ms() - request_start_time
   print(f"> {request.method} {request.path} ({response.status} {status_message}) [Sometime ms]")

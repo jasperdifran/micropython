@@ -21,6 +21,7 @@
 #define MICROPY_PY_BUILTINS_BYTEARRAY   (1)
 #define MICROPY_PY_BUILTINS_SLICE   (1)
 #define MICROPY_CPYTHON_COMPAT      (1)
+#define MICROPY_CPFS           (1)
 
 
 #define MICROPY_ALLOC_PATH_MAX            (256)
