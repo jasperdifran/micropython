@@ -34,12 +34,14 @@ static char heap[2048 * 32];
 #endif
 
 /* Buffer for us to read from and write to */
-char *data_buf;
+char *rx_buffer;
+char *tx_buffer;
 
-void run_webserver(char *websrv_buf) {
+void run_webserver(char *rx_buf, char *tx_buf) {
     int stack_dummy;
     stack_top = (char *)&stack_dummy;
-    data_buf = websrv_buf;
+    rx_buffer = rx_buf;
+    tx_buffer = tx_buf;
 
     gc_init(heap, heap + sizeof(heap));
     mp_init();

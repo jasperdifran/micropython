@@ -10,7 +10,8 @@
 
 #if MICROPY_PY_CPRINGBUF
 
-extern char *data_buf;
+extern char *rx_buffer;
+extern char *tx_buffer;
 
 STATIC mp_obj_t py_cpringbuf_info(void) {
     return mp_obj_new_str("cpringbuf", 9);
@@ -19,8 +20,8 @@ MP_DEFINE_CONST_FUN_OBJ_0(cpringbuf_info_obj, py_cpringbuf_info);
 
 STATIC mp_obj_t py_cpringbuf_rx(void) {
     for (int i = 0;;i++) {
-        if (data_buf[i] == '\0') {
-            return mp_obj_new_str(data_buf, i);
+        if (rx_buffer[i] == '\0') {
+            return mp_obj_new_str(rx_buffer, i);
         }
     }
 }
@@ -31,10 +32,10 @@ STATIC mp_obj_t py_cpringbuf_tx(mp_obj_t buf_in) {
     const char *str = mp_obj_str_get_str(buf_in);
     int i = 0;
     while (str[i] != '\0') {
-        data_buf[i] = str[i];
+        tx_buffer[i] = str[i];
         i++;
     }
-    data_buf[i] = '\0';
+    tx_buffer[i] = '\0';
 
     return MP_OBJ_NEW_SMALL_INT(0);
 }
