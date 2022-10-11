@@ -1,7 +1,10 @@
 # Jdf
 
+verbose = False
+
 def p(*args):
-    print("P: ", *args)
+    if verbose:
+        print("P: ", *args)
 
 class Reader:
     def __init__(self, stream):

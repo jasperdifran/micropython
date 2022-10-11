@@ -31,9 +31,13 @@ void do_str(const char *src, mp_parse_input_kind_t input_kind) {
 char data_buf_backer[100];
 char *data_buf = (char *)data_buf_backer;
 
+char *rx_buffer;
+char *tx_buffer;
+unsigned int *tx_length;
+
 static char *stack_top;
 #if MICROPY_ENABLE_GC
-static char heap[2048 * 32];
+static char heap[2048 * 64];
 #endif
 
 int main(int argc, char **argv) {
@@ -54,7 +58,7 @@ int main(int argc, char **argv) {
         }
     }
     #else
-    pyexec_friendly_repl();
+    // pyexec_friendly_repl();
     #endif
     // do_str("print('hello world!', list(x+1 for x in range(10)), end='eol\\n')", MP_PARSE_SINGLE_INPUT);
     // do_str("for i in range(10):\r\n  print(i)", MP_PARSE_FILE_INPUT);
