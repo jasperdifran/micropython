@@ -1,4 +1,8 @@
-# Jdf
+"""
+A simple stream class for the Phew framework.
+"""
+
+import cptxrx
 
 verbose = False
 
@@ -26,7 +30,10 @@ class Writer:
         self.stream = stream
 
     def write(self, data):
-        self.stream += data
+        cptxrx.write(data)
+    
+    def writefile(self, file):
+        cptxrx.writefile(file)
 
     def flush(self):
         self.stream = b''

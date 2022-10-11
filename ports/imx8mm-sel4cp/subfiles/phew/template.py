@@ -4,7 +4,7 @@ def render_template(template, **kwargs):
   # read the whole template file, we could work on single lines but
   # the performance is much worse - so long as our templates are
   # just a handful of kB it's ok to do this
-  data = cpfs.readfile('templates/' + template + ".html").encode('utf-8')
+  data = cpfs.readfile('templates/' + template + ".html")
   
   token_caret = 0
 
