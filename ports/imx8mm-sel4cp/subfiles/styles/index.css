@@ -1,9 +1,18 @@
-.container {
-    width: 100%;
-    height: 100%;
+html {
+    font-family: Arial, Courier, monospace;
+}
+
+body {
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
-    background-color: #7e2b2b;
+    align-items: center;
+}
+
+.paracontainer {
+    background-color: #dedede;
+    border-radius: 30px;
+    padding: 30px;
+    margin: 30px;
+    max-width: 800px;
 }

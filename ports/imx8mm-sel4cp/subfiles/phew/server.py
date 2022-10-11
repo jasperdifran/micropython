@@ -6,13 +6,6 @@ _routes = []
 catchall_handler = None
 
 
-# def file_exists(filename):
-#   try:
-#     return (os.stat(filename)[0] & 0x4000) == 0
-#   except OSError:
-#     return False
-
-
 def urldecode(text):
   text = text.replace("+", " ")
   result = ""
@@ -96,24 +89,17 @@ class FileResponse(Response):
     self.headers = headers
     self.file = file
 
-    p('Attempting to get file stat...')
     response = cpfs.stat(self.file)
-    p('Got stat', response)
     if isinstance(response, tuple):
       if response[3] == 1:
-        p('Is dir')
         return
-      p("Found file")
       self.status = 200
       extension = self.file.split(".")[-1].lower()
-      p("Got ext", extension)
       if extension in content_type_map:
         self.headers["Content-Type"] = content_type_map[extension]
       self.headers["Content-Length"] = response[0]
-      p("Mapped headers")
     else:
       self.headers["Content-Length"] = 0
-    p("Done file response")
 
 
 class Route:
@@ -290,18 +276,14 @@ def handle_request(reader, writer):
   # blank line to denote end of headers
   writer.write("\r\n".encode("ascii"))
   
-  p("Writing body")
   if isinstance(response, FileResponse):
     if response.status == 200:
-      p("Reading data...")
       data = cpfs.readfile(response.file)
-      p("Got data", data)
       writer.write(data)
   elif isinstance(response.body, str):
     writer.write(response.body.encode("utf-8"))
   elif isinstance(response.body, bytes):
     writer.write(response.body)
-  # writer.write(response.body.encode("ascii"))
   
   # processing_time = time.ticks_ms() - request_start_time
   print(f"> {request.method} {request.path} ({response.status} {status_message}) [Sometime ms]")

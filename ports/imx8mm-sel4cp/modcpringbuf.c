@@ -8,10 +8,11 @@
  */
 
 
-#if MICROPY_PY_CPRINGBUF
+// #if MICROPY_PY_CPRINGBUF
 
 extern char *rx_buffer;
 extern char *tx_buffer;
+extern unsigned int *tx_length;
 
 STATIC mp_obj_t py_cpringbuf_info(void) {
     return mp_obj_new_str("cpringbuf", 9);
@@ -36,6 +37,7 @@ STATIC mp_obj_t py_cpringbuf_tx(mp_obj_t buf_in) {
         i++;
     }
     tx_buffer[i] = '\0';
+    *tx_length = i;
 
     return MP_OBJ_NEW_SMALL_INT(0);
 }
@@ -60,4 +62,4 @@ const mp_obj_module_t mp_module_cpringbuf = {
 
 MP_REGISTER_MODULE(MP_QSTR_cpringbuf, mp_module_cpringbuf);
 
-#endif
+// #endif
