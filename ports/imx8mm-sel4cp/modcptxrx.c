@@ -35,11 +35,11 @@ STATIC mp_obj_t py_cptxrx_tx(mp_obj_t buf_in) {
     const char *str = mp_obj_str_get_str(buf_in);
     int bytes_written = 0;
     while (str[bytes_written] != '\0') {
-        tx_buffer[bytes_written] = str[bytes_written];
+        tx_buffer[*tx_length + bytes_written] = str[bytes_written];
         bytes_written++;
     }
-    tx_buffer[*tx_length + bytes_written] = '\0';
     *tx_length += bytes_written;
+    tx_buffer[*tx_length] = '\0';
 
     return MP_OBJ_NEW_SMALL_INT(0);
 }
@@ -51,9 +51,10 @@ STATIC mp_obj_t py_cptxrx_txfile(mp_obj_t filename_in) {
     size_t file_len = 0;
 
     memzip_locate(filename, &data, &file_len);
+    char *data_char = (char *)data;
     int bytes_written;
     for (bytes_written = 0; bytes_written < file_len; bytes_written++) {
-        tx_buffer[bytes_written + *tx_length] = ((char *)data)[bytes_written];
+        tx_buffer[*tx_length + bytes_written] = data_char[bytes_written];
     }
     *tx_length += bytes_written;
     tx_buffer[*tx_length] = '\0';
