@@ -60,7 +60,7 @@ SRC_C = \
 	shared/readline/readline.c \
 	shared/runtime/pyexec.c \
 	shared/runtime/stdout_helpers.c \
-	modcpringbuf.c \
+	modcptxrx.c \
 	modcpfs.c \
 
 SRC_C += \
@@ -76,7 +76,7 @@ SRC_C += $(SRC_MOD)
 
 SRC_CXX += $(SRC_MOD_CXX)
 
-SRC_QSTR += shared/readline/readline.c shared/runtime/pyexec.c modcpringbuf.c modcpfs.c
+SRC_QSTR += shared/readline/readline.c shared/runtime/pyexec.c modcptxrx.c modcpfs.c
 SRC_QSTR += $(SRC_MOD) $(SRC_MOD_CXX)
 
 OBJ += $(BUILD)/memzip-files.o
@@ -89,11 +89,6 @@ MEMZIP_DIR := ./subfiles
 MAKE_MEMZIP = ../../shared/memzip/make-memzip.py
 
 all: $(BUILD)/websrv.o
-
-
-# $(BUILD)/_frozen_mpy.c: frozentest.mpy $(BUILD)/genhdr/qstrdefs.generated.h
-# # 	$(ECHO) "MISC freezing bytecode"
-# # 	$(Q)$(TOP)/tools/mpy-tool.py -f -q $(BUILD)/genhdr/qstrdefs.preprocessed.h -mlongint-impl=none $< > $@
 
 $(BUILD)/memzip-files.o: $(BUILD)/memzip-files.c
     $(call compile_c)
@@ -108,24 +103,6 @@ $(BUILD)/websrv.o: $(OBJ)
 	$(ECHO) "OBJ $(OBJ)"
 	$(Q)$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
 	$(Q)$(SIZE) $@
-
-# $(BUILD)/websrv.elf: $(OBJ)
-# 	$(ECHO) "LINK $@"
-# 	$(ECHO) "LIBS $(LIBS), LDFLAGS $(LDFLAGS)"
-# 	$(ECHO) "OBJ $(OBJ)"
-# 	$(Q)$(LD) $(LDFLAGS) -o $@ $^ $(LIBS)
-# 	$(Q)$(SIZE) $@
-
-# $(BUILD)/firmware.bin: $(BUILD)/firmware.elf
-# 	$(Q)$(OBJCOPY) -O binary -j .isr_vector -j .text -j .data $^ $(BUILD)/firmware.bin
-
-# $(BUILD)/firmware.dfu: $(BUILD)/firmware.bin
-# 	$(ECHO) "Create $@"
-# 	$(Q)$(PYTHON) $(DFU) -b 0x08000000:$(BUILD)/firmware.bin $@
-
-deploy: $(BUILD)/firmware.dfu
-	$(ECHO) "Writing $< to the board"
-	$(Q)$(PYTHON) $(PYDFU) -u $<
 
 # Run emulation build on a POSIX system with suitable terminal settings
 run:

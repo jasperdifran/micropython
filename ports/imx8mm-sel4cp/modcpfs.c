@@ -30,7 +30,7 @@ STATIC mp_obj_t py_cpfs_readfile(mp_obj_t filename_in) {
 
     memzip_locate(filename, &data, &len);
 
-    return mp_obj_new_str(data, len);
+    return mp_obj_new_bytearray_by_ref(len, data);
 }
 
 MP_DEFINE_CONST_FUN_OBJ_1(cpfs_readfile_obj, py_cpfs_readfile);
