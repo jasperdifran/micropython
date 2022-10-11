@@ -1,14 +1,13 @@
 from phew import server
 from phew.server import FileResponse
 from phew.template import render_template
-import cpringbuf as cprb
+import cptxrx
 
 
 # basic response with status code and content type
 @server.route("/", methods=["GET"])
 def basic(request):
-  a = b''.join([x for x in render_template("index.html", name="World")])
-  return a, 200, "text/html"
+  return "Something incredible", 200, "text/html"
 
 @server.route("/hello", methods=["GET"])
 def hello(request):
@@ -16,7 +15,9 @@ def hello(request):
 
 @server.route("/page/<subpage>", methods=["GET"])
 def hello_name(request, subpage):
-  a = b"".join([x for x in render_template("sel4template", page_name=subpage)])
+  print("Serving page", subpage)
+  a = b"".join([x for x in render_template("sel4template", subpage=subpage)])
+  print("Got page:", a)
   return a, 200, "text/html"
 
 @server.route("/styles/<name>", methods=["GET"])
@@ -32,6 +33,5 @@ def catchall(request):
 from phew.stream import Reader, Writer
 from phew.server import handle_request
 
-writer = Writer(b'')
-handle_request(Reader(cprb.rx().encode()), writer)
-cprb.tx(writer.stream)
+writer = Writer()
+handle_request(Reader(cptxrx.rx()), writer)
