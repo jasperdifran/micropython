@@ -1,4 +1,5 @@
 from phew import server
+from phew.server import FileResponse
 from phew.template import render_template
 import cpringbuf as c
 import cpfs as fs
@@ -17,6 +18,11 @@ def hello(request):
 def hello_name(request, name):
   a = b"".join([x for x in render_template("example.html", name=name)])
   return a, 200, "text/html"
+
+@server.route("/styles/<name>", methods=["GET"])
+def style_files(request, name):
+  print("Serving file", f"/styles/{name}")
+  return FileResponse(f"/styles/{name}")
 
 # catchall example
 @server.catchall()

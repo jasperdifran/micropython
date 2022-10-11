@@ -1,5 +1,6 @@
 # Phew
 from phew.stream import p
+import cpfs 
 
 _routes = []
 catchall_handler = None
@@ -89,24 +90,30 @@ content_type_map = {
 }
 
 
-# class FileResponse(Response):
-#   def __init__(self, file, status=200, headers={}):
-#     self.status = 404
-#     self.headers = headers
-#     self.file = file
+class FileResponse(Response):
+  def __init__(self, file, status=200, headers={}):
+    self.status = 404
+    self.headers = headers
+    self.file = file
 
-#     try:
-#       if (os.stat(self.file)[0] & 0x4000) == 0:
-#         self.status = 200
-
-#         # auto set content type
-#         extension = self.file.split(".")[-1].lower()
-#         if extension in content_type_map:
-#           headers["Content-Type"] = content_type_map[extension]
-
-#         headers["Content-Length"] = os.stat(self.file)[6]
-#     except OSError:
-#       return False
+    p('Attempting to get file stat...')
+    response = cpfs.stat(self.file)
+    p('Got stat', response)
+    if isinstance(response, tuple):
+      if response[3] == 1:
+        p('Is dir')
+        return
+      p("Found file")
+      self.status = 200
+      extension = self.file.split(".")[-1].lower()
+      p("Got ext", extension)
+      if extension in content_type_map:
+        self.headers["Content-Type"] = content_type_map[extension]
+      self.headers["Content-Length"] = response[0]
+      p("Mapped headers")
+    else:
+      self.headers["Content-Length"] = 0
+    p("Done file response")
 
 
 class Route:
@@ -276,32 +283,21 @@ def handle_request(reader, writer):
   status_message = status_message_map.get(response.status, "Unknown")
   writer.write(f"HTTP/1.1 {response.status} {status_message}\r\n".encode("utf-8"))
 
-  
   # write headers
   for key, value in response.headers.items():
     writer.write(f"{key}: {value}\r\n".encode("ascii"))
 
   # blank line to denote end of headers
   writer.write("\r\n".encode("ascii"))
- 
-  # if isinstance(response, FileResponse):
-  #   # file
-  #   with open(response.file, "rb") as f:
-  #     while True:
-  #       chunk = f.read(1024)
-  #       if not chunk:
-  #         break
-  #       writer.write(chunk)
-  #       await writer.drain()
-  # elif type(response.body).__name__ == "generator":
-  #   # generator
-  #   for chunk in response.body:
-  #     writer.write(chunk)
-  #     await writer.drain()
-  # else:
-  #   # string/bytes
   
-  if isinstance(response.body, str):
+  p("Writing body")
+  if isinstance(response, FileResponse):
+    if response.status == 200:
+      p("Reading data...")
+      data = cpfs.readfile(response.file)
+      p("Got data", data)
+      writer.write(data)
+  elif isinstance(response.body, str):
     writer.write(response.body.encode("utf-8"))
   elif isinstance(response.body, bytes):
     writer.write(response.body)
@@ -343,6 +339,6 @@ def redirect(url, status = 301):
   return Response("", status, {"Location": url})
 
 
-# def serve_file(file):
-#   return FileResponse(file)
+def serve_file(file):
+  return FileResponse(file)
 

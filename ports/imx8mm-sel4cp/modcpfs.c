@@ -40,7 +40,9 @@ STATIC mp_obj_t py_cpfs_stat(mp_obj_t filename_in) {
 
     MEMZIP_FILE_INFO res;
 
-    memzip_stat(filename, &res);
+    if (memzip_stat(filename, &res) == MZ_NO_FILE) {
+        return MP_OBJ_NEW_SMALL_INT(1);
+    }
 
     return mp_obj_new_tuple(4, (mp_obj_t[]) {
         mp_obj_new_int(res.file_size),

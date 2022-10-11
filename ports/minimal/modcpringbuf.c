@@ -28,12 +28,9 @@ void ppprint(char *str, int len) {
 
 STATIC mp_obj_t py_cpringbuf_tx(mp_obj_t buf_in) {
     // Copy from str to data_buf
-    ppprint("hi", 2);
     const char *str = mp_obj_str_get_str(buf_in);
-    ppprint("hi", 2);
     int i = 0;
     while (str[i] != '\0') {
-        ppprint("hi", 2);
         data_buf[i] = str[i];
         i++;
     }
