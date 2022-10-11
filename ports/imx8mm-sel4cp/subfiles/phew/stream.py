@@ -26,16 +26,12 @@ class Reader:
         return res
 
 class Writer:
-    def __init__(self, stream):
-        self.stream = stream
+    def __init__(self):
+        pass
 
     def write(self, data):
-        cptxrx.write(data)
+        cptxrx.tx(data)
     
     def writefile(self, file):
-        cptxrx.writefile(file)
-
-    def flush(self):
-        self.stream = b''
-        pass
+        cptxrx.txfile(file)
 
