@@ -1,7 +1,9 @@
 import cpfs
 
 def render_template(template, **kwargs):
-  data = cpfs.readfile('templates/' + template).encode('utf-8')
+  print("render_template", template)
+  data = cpfs.readfile('templates/' + template + ".html").encode('utf-8')
+  print("data", data)
   # read the whole template file, we could work on single lines but
   # the performance is much worse - so long as our templates are
   # just a handful of kB it's ok to do this

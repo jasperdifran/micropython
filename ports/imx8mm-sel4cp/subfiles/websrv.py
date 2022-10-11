@@ -14,9 +14,9 @@ def basic(request):
 def hello(request):
   return "Hello, world!", 200, "text/html"
 
-@server.route("/hello/<name>", methods=["GET"])
-def hello_name(request, name):
-  a = b"".join([x for x in render_template("example.html", name=name)])
+@server.route("/page/<subpage>", methods=["GET"])
+def hello_name(request, subpage):
+  a = b"".join([x for x in render_template("sel4template", page_name=subpage)])
   return a, 200, "text/html"
 
 @server.route("/styles/<name>", methods=["GET"])
