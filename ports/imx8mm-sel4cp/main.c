@@ -30,7 +30,7 @@
 
 static char *stack_top;
 #if MICROPY_ENABLE_GC
-static char heap[2048 * 64];
+static char heap[2048 * 128];
 #endif
 
 /* Buffer for us to read from and write to */
