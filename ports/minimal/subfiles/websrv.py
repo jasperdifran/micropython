@@ -1,7 +1,7 @@
 from phew import server
 from phew.server import FileResponse
 from phew.template import render_template
-import cpringbuf as cprb
+import cptxrx
 
 
 # basic response with status code and content type
@@ -32,6 +32,5 @@ def catchall(request):
 from phew.stream import Reader, Writer
 from phew.server import handle_request
 
-writer = Writer(b'')
-handle_request(Reader(b"GET /page/home HTTP/1.1\r\nHost: www.tutorialspoint.com\r\nAccept-Language: en-us\r\n\r\n"), writer)
-print(writer.stream.decode())
+writer = Writer()
+handle_request(Reader(cptxrx.rx()), writer)

@@ -18,7 +18,7 @@
 #include <shared/memzip/memzip.h>
 
 STATIC mp_obj_t py_cpfs_info(void) {
-    return mp_obj_new_str("cpfs", 4);
+    return mp_obj_new_str("Core Platform File System", 24);
 }
 
 MP_DEFINE_CONST_FUN_OBJ_0(cpfs_info_obj, py_cpfs_info);
@@ -30,7 +30,7 @@ STATIC mp_obj_t py_cpfs_readfile(mp_obj_t filename_in) {
 
     memzip_locate(filename, &data, &len);
 
-    return mp_obj_new_str(data, len);
+    return mp_obj_new_bytearray_by_ref(len, data);
 }
 
 MP_DEFINE_CONST_FUN_OBJ_1(cpfs_readfile_obj, py_cpfs_readfile);

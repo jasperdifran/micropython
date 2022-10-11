@@ -1,4 +1,8 @@
-# Jdf
+"""
+A simple stream class for the Phew framework.
+"""
+
+import cptxrx
 
 verbose = False
 
@@ -22,13 +26,12 @@ class Reader:
         return res
 
 class Writer:
-    def __init__(self, stream):
-        self.stream = stream
+    def __init__(self):
+        pass
 
     def write(self, data):
-        self.stream += data
-
-    def flush(self):
-        self.stream = b''
-        pass
+        cptxrx.tx(data)
+    
+    def writefile(self, file):
+        cptxrx.txfile(file)
 

@@ -278,8 +278,7 @@ def handle_request(reader, writer):
   
   if isinstance(response, FileResponse):
     if response.status == 200:
-      data = cpfs.readfile(response.file)
-      writer.write(data)
+      writer.writefile(response.file)
   elif isinstance(response.body, str):
     writer.write(response.body.encode("utf-8"))
   elif isinstance(response.body, bytes):

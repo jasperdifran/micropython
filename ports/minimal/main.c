@@ -27,12 +27,8 @@ void do_str(const char *src, mp_parse_input_kind_t input_kind) {
 }
 #endif
 
-
-char data_buf_backer[100];
-char *data_buf = (char *)data_buf_backer;
-
-char *rx_buffer;
-char *tx_buffer;
+char rx_datas[1024] = "GET /page/home HTTP/1.1\r\nHost: www.tutorialspoint.com\r\nAccept-Language: en-us\r\n\r\n";
+char tx_datas[1024 * 64] = {0};
 unsigned int *tx_length;
 
 static char *stack_top;
@@ -62,7 +58,11 @@ int main(int argc, char **argv) {
     #endif
     // do_str("print('hello world!', list(x+1 for x in range(10)), end='eol\\n')", MP_PARSE_SINGLE_INPUT);
     // do_str("for i in range(10):\r\n  print(i)", MP_PARSE_FILE_INPUT);
+    unsigned int tx_length_backer = 0;
+    tx_length = &tx_length_backer;
     pyexec_file_if_exists("websrv.py");
+    printf("tx_length: %d\n", *tx_length);
+    printf("tx_buffer: %s\n", tx_datas);
     #else
     // pyexec_frozen_module("frozentest.py");
     #endif
