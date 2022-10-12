@@ -30,7 +30,7 @@ void do_str(const char *src, mp_parse_input_kind_t input_kind) {
 
 static char *stack_top;
 #if MICROPY_ENABLE_GC
-static char heap[2048 * 128];
+static char heap[2048 * 256];
 #endif
 
 /* Buffer for us to read from and write to */
@@ -48,9 +48,7 @@ void run_webserver(char *rx_buf, char *tx_buf, unsigned int *len) {
     gc_init(heap, heap + sizeof(heap));
     mp_init();
 
-    printf("Running websrv\n");
     pyexec_file_if_exists("websrv.py");
-    printf("Tx: \n%s\n", tx_buffer);
     
     mp_deinit();
     return;

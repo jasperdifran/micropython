@@ -35,14 +35,14 @@ def _parse_query_string(query_string):
 class Request:
   def __init__(self, method, uri, protocol):
     self.method = method
-    self.uri = uri
+    self.uri = '/index' if uri == '/' else uri
     self.protocol = protocol
     self.form = {}
     self.data = {}
     self.query = {}
-    query_string_start = uri.find("?") if uri.find("?") != -1 else len(uri)
-    self.path = uri[:query_string_start]
-    self.query_string = uri[query_string_start + 1:]
+    query_string_start = self.uri.find("?") if self.uri.find("?") != -1 else len(self.uri)
+    self.path = self.uri[:query_string_start]
+    self.query_string = self.uri[query_string_start + 1:]
     if self.query_string:
       self.query = _parse_query_string(self.query_string)
 
@@ -134,13 +134,12 @@ class Route:
     compare_parts = request.path.split("/")
     for part in self.path_parts:
       value = compare_parts.pop(0)
-      print("Part", part, "Compare", value)
       if part.startswith("<"):
         key = part[1:-1]
         parameters[key] = value
       elif part.startswith("["):
         key = part[1:-1]
-        parameters[key] = f"{value}/{'/'.join(compare_parts)}"
+        parameters[key] = '/'.join([value] + compare_parts)
 
     return self.handler(request, **parameters)
         
