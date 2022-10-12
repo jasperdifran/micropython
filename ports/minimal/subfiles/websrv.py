@@ -14,10 +14,11 @@ def basic(request):
 def hello(request):
   return "Hello, world!", 200, "text/html"
 
-@server.route("/page/<subpage>", methods=["GET"])
+@server.route("/page/[subpage]", methods=["GET"])
 def hello_name(request, subpage):
-  a = b"".join([x for x in render_template("sel4template", page_name=subpage)])
-  return a, 200, "text/html"
+  print("Matched", subpage)
+  # a = b"".join([x for x in render_template("sel4template", page_name=subpage)])
+  return "Good", 200, "text/html"
 
 @server.route("/styles/<name>", methods=["GET"])
 def style_files(request, name):

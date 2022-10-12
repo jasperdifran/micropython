@@ -13,7 +13,7 @@ def basic(request):
 def hello(request):
   return "Hello, world!", 200, "text/html"
 
-@server.route("/page/<page_name>", methods=["GET"])
+@server.route("/page/[page_name]", methods=["GET"])
 def hello_name(request, page_name):
   print("Serving page", page_name)
   a = b"".join([x for x in render_template("sel4template", page_name=page_name)])

@@ -108,15 +108,22 @@ class Route:
     self.methods = methods
     self.handler = handler
     self.path_parts = path.split("/")
+    self.path_matchall = False
+    for part in self.path_parts:
+      if part.startswith("["):
+        self.path_matchall = True
+    
 
   # returns True if the supplied request matches this route
   def matches(self, request):
     if request.method not in self.methods:
       return False
     compare_parts = request.path.split("/")
-    if len(compare_parts) != len(self.path_parts):
+    if len(compare_parts) != len(self.path_parts) and not self.path_matchall:
       return False
     for part, compare in zip(self.path_parts, compare_parts):
+      if (part.startswith("[")):
+        return True
       if not part.startswith("<") and part != compare:
         return False
     return True
@@ -124,10 +131,16 @@ class Route:
   # call the route handler passing any named parameters in the path
   def call_handler(self, request):
     parameters = {}
-    for part, compare in zip(self.path_parts, request.path.split("/")):
+    compare_parts = request.path.split("/")
+    for part in self.path_parts:
+      value = compare_parts.pop(0)
+      print("Part", part, "Compare", value)
       if part.startswith("<"):
-        name = part[1:-1]
-        parameters[name] = compare
+        key = part[1:-1]
+        parameters[key] = value
+      elif part.startswith("["):
+        key = part[1:-1]
+        parameters[key] = f"{value}/{'/'.join(compare_parts)}"
 
     return self.handler(request, **parameters)
         

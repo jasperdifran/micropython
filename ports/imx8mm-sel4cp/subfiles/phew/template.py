@@ -82,3 +82,7 @@ def render_template(template, **kwargs):
     token_caret = end + 2
 
 # logging.debug("> parsed template:", template, "(took", time.ticks_ms() - start_time, "ms)")
+
+
+def template_exists(template):
+  return cpfs.exists('templates/' + template + ".html")

@@ -27,7 +27,7 @@ void do_str(const char *src, mp_parse_input_kind_t input_kind) {
 }
 #endif
 
-char rx_datas[1024] = "GET /page/home HTTP/1.1\r\nHost: www.tutorialspoint.com\r\nAccept-Language: en-us\r\n\r\n";
+char rx_datas[1024] = "GET /page/home/embedded HTTP/1.1\r\nHost: www.tutorialspoint.com\r\nAccept-Language: en-us\r\n\r\n";
 char tx_datas[1024 * 64] = {0};
 unsigned int *tx_length;
 
