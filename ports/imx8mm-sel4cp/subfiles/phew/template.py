@@ -51,7 +51,13 @@ def render_template(template, **kwargs):
       # print("Params", params)
       # print("Globals", globals())
       if expression.startswith(b"render_template"):
-        result = render_template(params[expression[16:-1].decode("utf-8")], **kwargs)
+        print("expr", expression)
+        if (expression[16] == ord("'") or expression[16] == ord('"')):
+          print("looking for template:", expression[17:-2])
+          result = render_template(expression[17:-2].decode("utf-8"), **kwargs)
+        else:
+          print("looking for var:", expression[16:-1])
+          result = render_template(params[expression[16:-1].decode("utf-8")], **kwargs)
       else:
         result = b''
       # res = eval("retval()", globals(), params)
