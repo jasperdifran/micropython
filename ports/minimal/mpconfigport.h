@@ -23,6 +23,7 @@
 #define MICROPY_CPYTHON_COMPAT      (1)
 #define MICROPY_CPFS           (1)
 
+#define MICROPY_ENABLE_EXTERNAL_IMPORT    (1)
 
 #define MICROPY_ALLOC_PATH_MAX            (256)
 #define MICROPY_ALLOC_PARSE_CHUNK_INIT    (16)

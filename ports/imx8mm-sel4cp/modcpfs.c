@@ -13,6 +13,7 @@
 
 #include "py/builtin.h"
 #include "py/runtime.h"
+#include <stdio.h>
 #include <unistd.h>
 
 #include <shared/memzip/memzip.h>
@@ -28,7 +29,10 @@ STATIC mp_obj_t py_cpfs_readfile(mp_obj_t filename_in) {
     void *data = NULL;
     size_t len = 0;
 
-    memzip_locate(filename, &data, &len);
+    MEMZIP_RESULT err = memzip_locate(filename, &data, &len);
+    if (err != MZ_OK) {
+        return MP_OBJ_NEW_SMALL_INT(1);
+    }
 
     return mp_obj_new_bytearray_by_ref(len, data);
 }

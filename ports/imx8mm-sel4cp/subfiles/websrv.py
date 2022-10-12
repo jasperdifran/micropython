@@ -13,10 +13,10 @@ def basic(request):
 def hello(request):
   return "Hello, world!", 200, "text/html"
 
-@server.route("/page/<subpage>", methods=["GET"])
-def hello_name(request, subpage):
-  print("Serving page", subpage)
-  a = b"".join([x for x in render_template("sel4template", subpage=subpage)])
+@server.route("/page/<page_name>", methods=["GET"])
+def hello_name(request, page_name):
+  print("Serving page", page_name)
+  a = b"".join([x for x in render_template("sel4template", page_name=page_name)])
   print("Got page:", a)
   return a, 200, "text/html"
 
@@ -32,6 +32,9 @@ def catchall(request):
 
 from phew.stream import Reader, Writer
 from phew.server import handle_request
+
+res = eval("4 + 5")
+print(res)
 
 writer = Writer()
 handle_request(Reader(cptxrx.rx()), writer)

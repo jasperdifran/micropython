@@ -279,6 +279,9 @@ def handle_request(reader, writer):
   if isinstance(response, FileResponse):
     if response.status == 200:
       writer.writefile(response.file)
+  elif type(response.body).__name__ == "generator":
+    for chunk in response.body:
+      writer.write(chunk)
   elif isinstance(response.body, str):
     writer.write(response.body.encode("utf-8"))
   elif isinstance(response.body, bytes):
