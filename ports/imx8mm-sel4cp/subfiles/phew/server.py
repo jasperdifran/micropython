@@ -2,9 +2,16 @@
 from phew.stream import p
 import cpfs 
 
+content_len_max = 1024 * 128 # 128kb
+
 _routes = []
 catchall_handler = None
 
+def pdict(d):
+  p("{")
+  for key, val in d.items():
+    p("\t", key, ":", val)
+  p("}")
 
 def urldecode(text):
   text = text.replace("+", " ")
@@ -80,26 +87,86 @@ content_type_map = {
   "css": "text/css",
   "js": "text/javascript",
   "csv": "text/csv",
+  "pdf": "application/pdf",
 }
 
 
 class FileResponse(Response):
-  def __init__(self, file, status=200, headers={}):
+  def __init__(self, file, req_headers={}):
     self.status = 404
-    self.headers = headers
+    self.headers = {
+      "Content-Length": 0
+    }
     self.file = file
+    self.range_start = 0
+    self.range_end = 0
+    self.chunked = False
 
+    p("Req headers")
+    pdict(req_headers)
+
+    p("FileResponse:", file)
     response = cpfs.stat(self.file)
+    p("Some response:", response)
     if isinstance(response, tuple):
+      # Check if there's a range header
       if response[3] == 1:
+        self.headers["Content-Length"] = 0
+        p("Directory")
         return
-      self.status = 200
+      if "range" in req_headers:
+        range_header = req_headers["range"]
+        # self.range_start = int(range_header[6:range_header.find("-")])
+
+        range = range_header[6:]
+        range_split = range.split("-")
+        if len(range_split[1]) > 0:
+          self.range_end = int(range_split[1])
+        else:
+          self.range_end = response[0] - 1
+        self.range_start = int(range_split[0])
+        # self.range_end = int(range_header[range_header.find("-") + 1:])
+
+        # Check if requested range is too big, if so truncate it
+        if self.range_end - self.range_start > content_len_max:
+          self.range_end = self.range_start + content_len_max - 1
+
+        self.status = 206
+        self.headers["Content-Range"] = f"bytes {self.range_start}-{self.range_end}/{response[0]}"
+        self.headers["Content-Length"] = str(self.range_end - self.range_start + 1)
+        self.chunked = True
+      
+      # Check if requested file is too big and needs to be chunked
+      elif response[0] > content_len_max:
+        self.status = 206
+        self.range_end = content_len_max - 1
+        self.headers["Content-Range"] = f"bytes {self.range_start}-{self.range_end}/{response[0]}"
+        self.headers["Content-Length"] = content_len_max
+        self.chunked = True
+      else:
+        self.status = 200
+        self.headers["Content-Length"] = response[0]
+
       extension = self.file.split(".")[-1].lower()
+      p("Extension:", extension)
       if extension in content_type_map:
         self.headers["Content-Type"] = content_type_map[extension]
-      self.headers["Content-Length"] = response[0]
-    else:
-      self.headers["Content-Length"] = 0
+        p("Content type:", content_type_map[extension])
+      # p("Processes file:", self.file)
+      p("Ret headers")
+      pdict(self.headers)
+  
+  def sendResponse(self, writer):
+    p("Sending file:", self.file)
+    if self.status == 206:
+      if self.chunked:
+        writer.writefilerange(self.file, self.range_start, self.range_end)
+      else:
+        pass
+    elif self.status == 200:
+      writer.writefile(self.file)
+      pass
+      
 
 
 class Route:
@@ -243,6 +310,7 @@ def handle_request(reader, writer):
 
   request = Request(method, uri, protocol)
   request.headers = _parse_headers(reader)
+  pdict(request.headers)
   if "content-length" in request.headers and "content-type" in request.headers:
     if request.headers["content-type"].startswith("multipart/form-data"):
       request.form = _parse_form_data(reader, request.headers)
@@ -251,12 +319,14 @@ def handle_request(reader, writer):
     if request.headers["content-type"].startswith("application/x-www-form-urlencoded"):
       form_data = reader.read(int(request.headers["content-length"]))
       request.form = _parse_query_string(form_data.decode()) 
-
+    
   route = _match_route(request)
   if route:
     response = route.call_handler(request)
   elif catchall_handler:
     response = catchall_handler(request)
+
+  response.add_header("Accept-Ranges", "bytes")
 
   # if shorthand body generator only notation used then convert to tuple
   if type(response).__name__ == "generator":
@@ -289,8 +359,10 @@ def handle_request(reader, writer):
   writer.write("\r\n".encode("ascii"))
   
   if isinstance(response, FileResponse):
-    if response.status == 200:
-      writer.writefile(response.file)
+    p("sending file")
+    response.sendResponse(writer)
+    # if response.status == 200:
+    #   writer.writefile(response.file)
   elif type(response.body).__name__ == "generator":
     for chunk in response.body:
       writer.write(chunk)

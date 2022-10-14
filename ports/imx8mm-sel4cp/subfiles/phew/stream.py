@@ -4,7 +4,7 @@ A simple stream class for the Phew framework.
 
 import cptxrx
 
-verbose = False
+verbose = True
 
 def p(*args):
     if verbose:
@@ -35,3 +35,5 @@ class Writer:
     def writefile(self, file):
         cptxrx.txfile(file)
 
+    def writefilerange(self, file, start, end):
+        cptxrx.txfilerange(file, start, end)

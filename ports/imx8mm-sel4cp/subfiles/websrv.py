@@ -1,6 +1,8 @@
 from phew import server
 from phew.server import FileResponse
 from phew.template import render_template, template_exists
+
+from phew.stream import p
 import cptxrx
 
 @server.route("/[page_name]", methods=["GET"])
@@ -9,6 +11,11 @@ def page_server(request, page_name):
     return "Not found", 404
   a = b"".join([x for x in render_template("sel4template", page_name=page_name)])
   return a, 200, "text/html"
+
+@server.route("/about/seL4-whitepaper.pdf", methods=["GET"])
+def seL4_whitepaper(request):
+  p("Got whitepaper request")
+  return FileResponse("templates/about/seL4-whitepaper.pdf", request.headers)
 
 @server.route("/styles/<name>", methods=["GET"])
 def style_files(request, name):
