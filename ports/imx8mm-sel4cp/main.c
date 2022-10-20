@@ -10,6 +10,11 @@
 #include "py/gc.h"
 #include "py/mperrno.h"
 #include "shared/runtime/pyexec.h"
+#include "time_core.h"
+
+void init_websrv() {
+    rtc_enable();
+}
 
 #if MICROPY_ENABLE_COMPILER
 void do_str(const char *src, mp_parse_input_kind_t input_kind) {
