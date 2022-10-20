@@ -45,7 +45,7 @@ STATIC mp_obj_t py_cpfs_stat(mp_obj_t filename_in) {
     MEMZIP_FILE_INFO res;
 
     if (memzip_stat(filename, &res) == MZ_NO_FILE) {
-        mp_obj_print_exception(&mp_plat_print, mp_obj_new_str("File not found", 14));
+        // mp_obj_print_exception(&mp_plat_print, mp_obj_new_str("File not found", 14));
         return MP_OBJ_NEW_SMALL_INT(1);
     }
 

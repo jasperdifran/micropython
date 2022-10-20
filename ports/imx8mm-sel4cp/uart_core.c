@@ -8,9 +8,6 @@
 
 // https://github.com/torvalds/linux/blob/master/drivers/tty/serial/fsl_lpuart.c
 
-
-
-
 #define UARTSTAT 0x98
 #define RECEIVE 0x0
 #define TRANSMIT 0x40
