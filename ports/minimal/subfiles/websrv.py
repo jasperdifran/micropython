@@ -1,29 +1,85 @@
+
 from phew import server
-from phew.server import FileResponse
-from phew.template import render_template
+from phew.stream import Reader
+
+from metadata.breadcrumbs import breadcrumbs
+from metadata.nav import nav
+
+from phew.stream import p
 import cptxrx
+import cpfs as fs
+
+def make_breadcrumbs(page_name):
+  # We assume that the page exists
+  pages = page_name.split('/')
+  crumbs = []
+  if len(pages) == 0:
+    return []
+  else:
+    crumbs = breadcrumbs[pages[0]][pages[1]]
+  print("Crumbs", crumbs)
+  res = b"\n<ul>\n"
+  for item in crumbs:
+    res += b'\t<li href="' + item['url'] + b'">' + item['name'] + b'</li>\n'
+  res += b'</ul>\n'
+  return res
 
 
-# basic response with status code and content type
-@server.route("/", methods=["GET"])
-def basic(request):
-  a = b''.join([x for x in render_template("index.html", name="World")])
-  return a, 200, "text/html"
+def render_nav():
+  res = b'<ul>'
+  for item in nav:
+    res += b'<li><a href="' + item['url'] + b'">' + item['name'] + b'</a></li>'
+    if (item['children'] != None):
+      res += b'<ul>'
+      for child in item['children']:
+        res += b'<li><a href="' + child['url'] + b'">' + child['name'] + b'</a></li>'
+      res += b'</ul>'
+  res += b'</ul>'
+  return res
 
-@server.route("/hello", methods=["GET"])
-def hello(request):
-  return "Hello, world!", 200, "text/html"
+def page_response(page_name):
+  content = b''
+  content += fs.readfile('/templates/sel4header.html')
+  print("Added file")
+  content += render_nav()
+  print("Added nav")
+  content += make_breadcrumbs(page_name)
+  content += fs.readfile('/content/' + page_name + '.html')
+  content += fs.readfile('/templates/sel4footer.html')
 
-@server.route("/page/[subpage]", methods=["GET"])
-def hello_name(request, subpage):
-  print("Matched", subpage)
-  # a = b"".join([x for x in render_template("sel4template", page_name=subpage)])
-  return "Good", 200, "text/html"
+  return content
 
-@server.route("/styles/<name>", methods=["GET"])
-def style_files(request, name):
-  print("Serving file", f"/styles/{name}")
-  return FileResponse(f"/styles/{name}")
+
+
+
+
+# @server.route('/', methods=['GET'])
+# def index(request):
+#   if (not template_exists('index.html')):
+#     return "Not found", 404
+#   a = b"".join([x for x in render_template('sel4template', page_name='index.html')])
+#   return a, 200, 'text/html'
+
+@server.route('/[page_name]', methods=['GET'])
+def page(request, page_name):
+  if '.' in page_name:
+    return "Not found", 404
+  stat = fs.stat("content/" + page_name + ".html")
+  if isinstance(stat, int):
+    stat = fs.stat("content/" + page_name)
+  if isinstance(stat, int):
+    return "Not found", 404
+  elif stat[3] == 1:
+    page_name = page_name + "/index"
+  return page_response(page_name), 200, 'text/html'
+
+
+# @server.route("/[page_name]", methods=["GET"])
+# def page_server(request, page_name):
+#   if (not template_exists(page_name)):
+#     return "Not found", 404
+#   a = b"".join([x for x in render_template("sel4template", page_name=page_name)])
+#   return a, 200, "text/html"
 
 # catchall example
 @server.catchall()

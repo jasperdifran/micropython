@@ -27,7 +27,7 @@ void do_str(const char *src, mp_parse_input_kind_t input_kind) {
 }
 #endif
 
-char rx_datas[1024] = "GET /page/home/embedded HTTP/1.1\r\nHost: www.tutorialspoint.com\r\nAccept-Language: en-us\r\n\r\n";
+char rx_datas[1024] = "GET /about/performance HTTP/1.1\r\nHost: www.tutorialspoint.com\r\nAccept-Language: en-us\r\n\r\n";
 char tx_datas[1024] = {0};
 unsigned int tx_length_backer = 0;
 unsigned int *tx_length = &tx_length_backer;
@@ -55,7 +55,7 @@ int main(int argc, char **argv) {
         }
     }
     #else
-    pyexec_friendly_repl();
+    // pyexec_friendly_repl();
     #endif
     // do_str("print('hello world!', list(x+1 for x in range(10)), end='eol\\n')", MP_PARSE_SINGLE_INPUT);
     // do_str("for i in range(10):\r\n  print(i)", MP_PARSE_FILE_INPUT);

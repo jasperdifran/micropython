@@ -35,3 +35,5 @@ class Writer:
     def writefile(self, file):
         cptxrx.txfile(file)
 
+    def writefilerange(self, file, start, end):
+        cptxrx.txfilerange(file, start, end)

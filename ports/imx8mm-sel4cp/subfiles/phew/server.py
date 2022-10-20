@@ -1,6 +1,7 @@
 # Phew
 from phew.stream import p
 import cpfs 
+import utime as time
 
 content_len_max = 1024 * 128 # 128kb
 
@@ -42,7 +43,8 @@ def _parse_query_string(query_string):
 class Request:
   def __init__(self, method, uri, protocol):
     self.method = method
-    self.uri = '/index' if uri == '/' else uri
+    self.uri = uri
+    # self.uri = '/index' if uri == '/' else uri
     self.protocol = protocol
     self.form = {}
     self.data = {}
@@ -102,17 +104,14 @@ class FileResponse(Response):
     self.range_end = 0
     self.chunked = False
 
-    p("Req headers")
-    pdict(req_headers)
-
-    p("FileResponse:", file)
     response = cpfs.stat(self.file)
-    p("Some response:", response)
     if isinstance(response, tuple):
-      # Check if there's a range header
+      # Show we accept byte ranges
+      self.headers["Accept-Ranges"] = "bytes"
+
+      # Check if file is a directory
       if response[3] == 1:
         self.headers["Content-Length"] = 0
-        p("Directory")
         return
       if "range" in req_headers:
         range_header = req_headers["range"]
@@ -148,16 +147,10 @@ class FileResponse(Response):
         self.headers["Content-Length"] = response[0]
 
       extension = self.file.split(".")[-1].lower()
-      p("Extension:", extension)
       if extension in content_type_map:
         self.headers["Content-Type"] = content_type_map[extension]
-        p("Content type:", content_type_map[extension])
-      # p("Processes file:", self.file)
-      p("Ret headers")
-      pdict(self.headers)
   
   def sendResponse(self, writer):
-    p("Sending file:", self.file)
     if self.status == 206:
       if self.chunked:
         writer.writefilerange(self.file, self.range_start, self.range_end)
@@ -241,42 +234,42 @@ def _match_route(request):
   return None
 
 
-# if the content type is multipart/form-data then parse the fields
-def _parse_form_data(reader, headers):
-  boundary = headers["content-type"].split("boundary=")[1]
-  # discard first boundary line
-  dummy = reader.readline()
+# # if the content type is multipart/form-data then parse the fields
+# def _parse_form_data(reader, headers):
+#   boundary = headers["content-type"].split("boundary=")[1]
+#   # discard first boundary line
+#   dummy = reader.readline()
 
-  form = {}
-  while True:
-    # get the field name
-    field_headers = _parse_headers(reader)
-    if len(field_headers) == 0:
-      break
-    name = field_headers["content-disposition"].split("name=\"")[1][:-1]
-    # get the field value
-    value = ""
-    while True:
-      line = reader.readline()
-      line = line.decode().strip()
-      # if we hit a boundary then save the value and move to next field
-      if line == "--" + boundary:
-        form[name] = value
-        break
-      # if we hit end of form data boundary then save value and return
-      if line == "--" + boundary + "--":
-        form[name] = value
-        return form
-      value += line
-  return None
+#   form = {}
+#   while True:
+#     # get the field name
+#     field_headers = _parse_headers(reader)
+#     if len(field_headers) == 0:
+#       break
+#     name = field_headers["content-disposition"].split("name=\"")[1][:-1]
+#     # get the field value
+#     value = ""
+#     while True:
+#       line = reader.readline()
+#       line = line.decode().strip()
+#       # if we hit a boundary then save the value and move to next field
+#       if line == "--" + boundary:
+#         form[name] = value
+#         break
+#       # if we hit end of form data boundary then save value and return
+#       if line == "--" + boundary + "--":
+#         form[name] = value
+#         return form
+#       value += line
+#   return None
 
 
-# if the content type is application/json then parse the body
-def _parse_json_body(reader, headers):
-  import json
-  content_length_bytes = int(headers["content-length"])
-  body = reader.readexactly(content_length_bytes)
-  return json.loads(body.decode())
+# # if the content type is application/json then parse the body
+# def _parse_json_body(reader, headers):
+#   import json
+#   content_length_bytes = int(headers["content-length"])
+#   body = reader.readexactly(content_length_bytes)
+#   return json.loads(body.decode())
 
 
 status_message_map = {
@@ -299,7 +292,7 @@ status_message_map = {
 def handle_request(reader, writer):
   response = None
 
-  # request_start_time = time.ticks_ms()
+  request_start_time = time.ticks_ms()
 
   request_line = reader.readline()
   try:
@@ -310,23 +303,26 @@ def handle_request(reader, writer):
 
   request = Request(method, uri, protocol)
   request.headers = _parse_headers(reader)
-  pdict(request.headers)
-  if "content-length" in request.headers and "content-type" in request.headers:
-    if request.headers["content-type"].startswith("multipart/form-data"):
-      request.form = _parse_form_data(reader, request.headers)
-    if request.headers["content-type"].startswith("application/json"):
-      request.data = _parse_json_body(reader, request.headers)
-    if request.headers["content-type"].startswith("application/x-www-form-urlencoded"):
-      form_data = reader.read(int(request.headers["content-length"]))
-      request.form = _parse_query_string(form_data.decode()) 
+  # pdict(request.headers)
+  # if "content-length" in request.headers and "content-type" in request.headers:
+  #   if request.headers["content-type"].startswith("multipart/form-data"):
+  #     request.form = _parse_form_data(reader, request.headers)
+  #   if request.headers["content-type"].startswith("application/json"):
+  #     request.data = _parse_json_body(reader, request.headers)
+  #   if request.headers["content-type"].startswith("application/x-www-form-urlencoded"):
+  #     form_data = reader.read(int(request.headers["content-length"]))
+  #     request.form = _parse_query_string(form_data.decode()) 
     
+  # p("Added headers")
+
   route = _match_route(request)
   if route:
     response = route.call_handler(request)
   elif catchall_handler:
     response = catchall_handler(request)
+  
+  p(f"Request took {time.ticks_ms() - request_start_time}ms")
 
-  response.add_header("Accept-Ranges", "bytes")
 
   # if shorthand body generator only notation used then convert to tuple
   if type(response).__name__ == "generator":
@@ -355,11 +351,11 @@ def handle_request(reader, writer):
   for key, value in response.headers.items():
     writer.write(f"{key}: {value}\r\n".encode("ascii"))
 
+
   # blank line to denote end of headers
   writer.write("\r\n".encode("ascii"))
   
   if isinstance(response, FileResponse):
-    p("sending file")
     response.sendResponse(writer)
     # if response.status == 200:
     #   writer.writefile(response.file)
@@ -370,9 +366,9 @@ def handle_request(reader, writer):
     writer.write(response.body.encode("utf-8"))
   elif isinstance(response.body, bytes):
     writer.write(response.body)
-  
-  # processing_time = time.ticks_ms() - request_start_time
-  print(f"> {request.method} {request.path} ({response.status} {status_message}) [Sometime ms]")
+
+  processing_time = time.ticks_ms() - request_start_time
+  print(f"> {request.method} {request.path} ({response.status} {status_message}) [{processing_time} ms]")
 
 # adds a new route to the routing table
 def add_route(path, handler, methods=["GET"]):
