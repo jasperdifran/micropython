@@ -45,6 +45,21 @@ breadcrumbs = {
             {'name': b'seL4 Foundation', 'url': b'/foundation'},
             {'name': b'Foundation Services', 'url': b'/foundation/services'},
         ],
+        'summit': [
+            {'name': b'Home', 'url': b'/'},
+            {'name': b'seL4 Foundation', 'url': b'/foundation'},
+            {'name': b'seL4 Summit', 'url': b'/foundation/summit'},
+        ],
+        'support': [
+            {'name': b'Home', 'url': b'/'},
+            {'name': b'seL4 Foundation', 'url': b'/foundation'},
+            {'name': b'Support Us', 'url': b'/foundation/support'},
+        ],
+        'trademark': [
+            {'name': b'Home', 'url': b'/'},
+            {'name': b'seL4 Foundation', 'url': b'/foundation'},
+            {'name': b'Trademark', 'url': b'/foundation/trademark'},
+        ],
     },
     'contact': {
         'index': [
