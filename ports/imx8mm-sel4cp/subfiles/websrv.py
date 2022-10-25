@@ -49,12 +49,22 @@ def render_nav(page_name):
   return res
 
 def page_response(page_name, addBreadcrumbs=True):
+  logo_image = b'logo-text-white.svg'
+  logo_alt = b'seL4'
+  if page_name.startswith(b'foundation/summit'):
+    logo_image = b'sel4-summit-logo.svg'
+    logo_alt = b'seL4 summit logo'
+  elif page_name.startswith(b'foundation'):
+    logo_image = b'sel4-foundation-logo.svg'
+    logo_alt = b'seL4 foundation logo'
+
   navigation = render_nav(page_name)
   breadcrumbs = make_breadcrumbs(page_name) if addBreadcrumbs else b''
   title = page_title[page_name]
   page_content = fs.readfile('/content/' + page_name + '.html')
   content = b''.join([b for b in render_template('sel4header.html', \
-    navigation=navigation, breadcrumbs=breadcrumbs, title=title, page_content=page_content)])
+    navigation=navigation, breadcrumbs=breadcrumbs, title=title, page_content=page_content, \
+      logo_image=logo_image, logo_alt=logo_alt)])
   return content
 
 @server.route('/', methods=['GET'])
