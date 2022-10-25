@@ -17,14 +17,14 @@ def make_breadcrumbs(page_name):
   pages = page_name.split('/')
   crumbs = []
   if len(pages) == 0:
-    return []
+    return b''
   else:
     crumbs = breadcrumbs[pages[0]][pages[1]]
-  print("Crumbs", crumbs)
-  res = b"\n<ul>\n"
+
+  res = b'<div class="row"><ol class="breadcrumb">'
   for item in crumbs:
-    res += b'\t<li><a href="' + item['url'] + b'">' + item['name'] + b'</a></li>\n'
-  res += b'</ul>\n'
+    res += b'<li><a href="' + item['url'] + b'">' + item['name'] + b'</a></li>'
+  res += b'</ol></div>'
   return res
 
 
