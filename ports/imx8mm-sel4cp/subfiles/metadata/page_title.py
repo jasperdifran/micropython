@@ -8,6 +8,7 @@ page_title = {
     'foundation/tsc': b'seL4 TSC',
     'foundation/membership': b'Membership',
     'foundation/join': b'Join',
+    'foundation/services': b'Endorsed Service Providers',
     'contact/index': b'Contact',
     'contribute/index': b'Contribute',
     'use/index': b'Retrofit',

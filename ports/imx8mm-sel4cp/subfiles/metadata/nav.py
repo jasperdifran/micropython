@@ -23,6 +23,7 @@ nav = [
             {'name': b'TSC', 'url': b'/foundation/tsc'},
             {'name': b'Membership', 'url': b'/foundation/membership'},
             {'name': b'Join the Foundation now!', 'url': b'/foundation/join'},
+            {'name': b'Endorsed Service Providers', 'url': b'/foundation/services'},
         ]
     },
     {
