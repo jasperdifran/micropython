@@ -60,6 +60,16 @@ breadcrumbs = {
             {'name': b'seL4 Foundation', 'url': b'/foundation'},
             {'name': b'Trademark', 'url': b'/foundation/trademark'},
         ],
+        'jobs': [
+            {'name': b'Home', 'url': b'/'},
+            {'name': b'seL4 Foundation', 'url': b'/foundation'},
+            {'name': b'Jobs in the seL4 ecosystem', 'url': b'/foundation/jobs'},
+        ],
+        'contact': [
+            {'name': b'Home', 'url': b'/'},
+            {'name': b'seL4 Foundation', 'url': b'/foundation'},
+            {'name': b'Contact the seL4 Foundation', 'url': b'/foundation/contact'},
+        ],
     },
     'contact': {
         'index': [

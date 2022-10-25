@@ -27,6 +27,8 @@ nav = [
             {'name': b'seL4 Summit', 'url': b'/foundation/summit'},
             {'name': b'Support Us', 'url': b'/foundation/support'},
             {'name': b'Trademark', 'url': b'/foundation/trademark'},
+            {'name': b'Jobs in the seL4 ecosystem', 'url': b'/foundation/jobs'},
+            {'name': b'Contact the seL4 Foundation', 'url': b'/foundation/contact'},
         ]
     },
     {

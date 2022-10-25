@@ -12,6 +12,8 @@ page_title = {
     'foundation/summit': b'Summit',
     'foundation/support': b'Support',
     'foundation/trademark': b'seL4 Trademark Guidelines',
+    'foundation/jobs': b'Jobs',
+    'foundation/contact': b'Contact',
     'contact/index': b'Contact',
     'contribute/index': b'Contribute',
     'use/index': b'Retrofit',
