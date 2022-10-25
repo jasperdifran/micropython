@@ -25,5 +25,13 @@ nav = [
         'name': b'Stay in touch',
         'url': b'/contact',
         'children': []
+    },
+    {
+        'name': b'Contribute',
+        'url': b'/contribute',
+        'children': [
+            {'name': b'Contribute', 'url': b'/contribute'},
+            {'name': b'GitHub', 'url': b'https://github.com/seL4'}
+        ]
     }
 ]

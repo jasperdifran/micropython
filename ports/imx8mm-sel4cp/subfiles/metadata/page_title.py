@@ -3,4 +3,5 @@ page_title = {
     'about/index': b'What is seL4?',
     'about/performance': b'seL4 Benchmarks',
     'contact/index': b'Contact',
+    'contribute/index': b'Contribute',
 }

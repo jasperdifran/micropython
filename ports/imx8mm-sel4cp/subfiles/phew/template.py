@@ -48,9 +48,7 @@ def render_template(template, **kwargs):
         else:
           result = render_template(params[expression[16:-1].decode("utf-8")], **kwargs)
       else:
-        print("Eval result")
         result = eval(expression, globals(), params)
-        print("Got result", result)
 
     if type(result).__name__ == "generator":
       # if expression returned a generator then iterate it fully
@@ -60,9 +58,7 @@ def render_template(template, **kwargs):
     else:
       # yield the result of the expression
       if result:
-        print("Yielding result")
-        yield result#str(result).encode("utf-8")
-        print("Yielded")
+        yield result
 
     # discard the parsed bit
     token_caret = end + 2
