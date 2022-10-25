@@ -10,6 +10,12 @@ breadcrumbs = {
             {'name': b'Performance', 'url': b'/about/performance'},
         ],
     },
+    'foundation': {
+        'index': [
+            {'name': b'Home', 'url': b'/'},
+            {'name': b'seL4 Foundation', 'url': b'/foundation'},
+        ]
+    },
     'contact': {
         'index': [
             {'name': b'Home', 'url': b'/'},
@@ -20,6 +26,18 @@ breadcrumbs = {
         'index': [
             {'name': b'Home', 'url': b'/'},
             {'name': b'Contribute', 'url': b'/contribute'},
+        ]
+    },
+    'use': {
+        'index': [
+            {'name': b'Home', 'url': b'/'},
+            {'name': b'Use', 'url': b'/use'},
+        ]
+    },
+    'learn': {
+        'index': [
+            {'name': b'Home', 'url': b'/'},
+            {'name': b'Learn', 'url': b'/learn'},
         ]
     },
 }

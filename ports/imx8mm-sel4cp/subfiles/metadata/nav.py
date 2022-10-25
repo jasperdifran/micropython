@@ -33,5 +33,15 @@ nav = [
             {'name': b'Contribute', 'url': b'/contribute'},
             {'name': b'GitHub', 'url': b'https://github.com/seL4'}
         ]
-    }
+    },
+    {
+        'name': b'Use',
+        'url': b'/use',
+        'children': []
+    },
+    {
+        'name': b'Learn',
+        'url': b'/learn',
+        'children': []
+    },
 ]

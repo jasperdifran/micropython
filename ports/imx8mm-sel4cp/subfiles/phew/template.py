@@ -21,7 +21,6 @@ def render_template(template, **kwargs):
       break
 
     expression = data[start + 2:end].strip()
-    print("Expression")
 
     # output the bit before the tag
     yield data[token_caret:start]
