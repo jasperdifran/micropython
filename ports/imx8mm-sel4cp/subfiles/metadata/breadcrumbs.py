@@ -20,6 +20,11 @@ breadcrumbs = {
             {'name': b'seL4 Foundation', 'url': b'/foundation'},
             {'name': b'Governance', 'url': b'/foundation/governance'},
         ],
+        'board': [
+            {'name': b'Home', 'url': b'/'},
+            {'name': b'seL4 Foundation', 'url': b'/foundation'},
+            {'name': b'Governing Board', 'url': b'/foundation/board'},
+        ],
     },
     'contact': {
         'index': [

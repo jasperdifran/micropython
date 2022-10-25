@@ -4,6 +4,7 @@ page_title = {
     'about/performance': b'seL4 Benchmarks',
     'foundation/index': b'The seL4 Foundation',
     'foundation/governance': b'Governance',
+    'foundation/board': b'Governance',
     'contact/index': b'Contact',
     'contribute/index': b'Contribute',
     'use/index': b'Retrofit',

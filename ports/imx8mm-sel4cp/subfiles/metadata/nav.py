@@ -19,6 +19,7 @@ nav = [
         'children': [
             {'name': b'About the seL4 Foundation', 'url': b'/foundation'},
             {'name': b'Governance', 'url': b'/foundation/governance'},
+            {'name': b'Governing Board', 'url': b'/foundation/board'},
         ]
     },
     {
