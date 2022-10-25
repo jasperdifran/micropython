@@ -33,19 +33,20 @@ def render_nav(page_name):
   group = page_name.split('/')[0]
 
   for item in nav:
-    activeClass = b'active' if item['url'].decode()[1:].startswith(group) else b''
+    activeGroup = b'active' if item['url'].decode()[1:].startswith(group) else b''
     if page_name == 'index':
-      activeClass = b'active' if item['url'] == b'/' else b''
+      activeGroup = b'active' if item['url'] == b'/' else b''
 
     # res += b'<li><a href="' + item['url'] + b'">' + item['name'] + b'</a></li>'
     if (item['children'] and item['children'] != []):
-      res += b'<li class="dropdown ' + activeClass + '"><a class="dropdown-toggle" data-toggle="dropdown" href="' + item['url'] + '">' + item['name'] + ' <span class="caret"></span></a>'
+      res += b'<li class="dropdown ' + activeGroup + '"><a class="dropdown-toggle" data-toggle="dropdown" href="' + item['url'] + '">' + item['name'] + ' <span class="caret"></span></a>'
       res += b'<ul class="dropdown-menu">'
       for child in item['children']:
-        res += b'<li><a href="' + child['url'] + b'">' + child['name'] + b'</a></li>'
+        activePage = b'active' if child['url'].decode()[1:].startswith(page_name) else b''
+        res += b'<li class="' + activePage + '"><a href="' + child['url'] + b'">' + child['name'] + b'</a></li>'
       res += b'</ul></li>'
     else:
-      res += b'<li class="' + activeClass + '"><a href="' + item['url'] + b'">' + item['name'] + b'</a></li>'
+      res += b'<li class="' + activeGroup + '"><a href="' + item['url'] + b'">' + item['name'] + b'</a></li>'
   return res
 
 def page_response(page_name, addBreadcrumbs=True):
