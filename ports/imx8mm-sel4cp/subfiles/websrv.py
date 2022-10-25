@@ -65,7 +65,7 @@ def page_response(page_name, addBreadcrumbs=True):
   page_content = fs.readfile('/content/' + page_name + '.html')
   content = b''.join([b for b in render_template('sel4header.html', \
     navigation=navigation, breadcrumbs=breadcrumbs, title=title, page_content=page_content, \
-      logo_image=logo_image, logo_alt=logo_alt)])
+    logo_image=logo_image, logo_alt=logo_alt)])
   return content
 
 @server.route('/', methods=['GET'])

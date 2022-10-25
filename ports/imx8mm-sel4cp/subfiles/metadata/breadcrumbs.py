@@ -2,13 +2,18 @@ breadcrumbs = {
     'about': {
         'index': [
             {'name': b'Home', 'url': b'/'},
-            {'name': b'About', 'url': b'/about'},
+            {'name': b'What is seL4?', 'url': b'/about'},
         ],
         'performance': [
             {'name': b'Home', 'url': b'/'},
-            {'name': b'About', 'url': b'/about'},
+            {'name': b'What is seL4?', 'url': b'/about'},
             {'name': b'Performance', 'url': b'/about/performance'},
         ],
+        'more-research': [
+            {'name': b'Home', 'url': b'/'},
+            {'name': b'What is seL4?', 'url': b'/about'},
+            {'name': b'More Research', 'url': b'/about/more-research'},
+        ]
     },
     'foundation': {
         'index': [
@@ -95,4 +100,27 @@ breadcrumbs = {
             {'name': b'Learn', 'url': b'/learn'},
         ]
     },
+    'info': {
+        'index': [
+            {'name': b'Home', 'url': b'/'},
+            {'name': b'More Info', 'url': b'/info'},
+        ]
+    },
+    'news': {
+        '2022': [
+            {'name': b'Home', 'url': b'/'},
+            {'name': b'News', 'url': b'/news/2022'},
+            {'name': b'2022', 'url': b'/news/2022'},
+        ],
+        '2021': [
+            {'name': b'Home', 'url': b'/'},
+            {'name': b'News', 'url': b'/news/2022'},
+            {'name': b'2021', 'url': b'/news/2021'},
+        ],
+        '2020': [
+            {'name': b'Home', 'url': b'/'},
+            {'name': b'News', 'url': b'/news/2022'},
+            {'name': b'2021', 'url': b'/news/2021'},
+        ],
+    }
 }

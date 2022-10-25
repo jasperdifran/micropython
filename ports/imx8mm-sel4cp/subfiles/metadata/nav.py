@@ -54,4 +54,19 @@ nav = [
         'url': b'/learn',
         'children': []
     },
+    {
+        'name': b'More Info',
+        'url': b'/info',
+        'children': [
+            {'name': b'More Info', 'url': b'/info'},
+            {'name': b'FAQ', 'url': b'https://docs.sel4.systems/projects/sel4/frequently-asked-questions.html'},
+            {'name': b'Roadmap', 'url': b'https://docs.sel4.systems/projects/roadmap.html'},
+            {'name': b'More research', 'url': b'/about/more-research'}
+        ]
+    },
+    {
+        'name': b'News',
+        'url': b'/news/2022',
+        'children': []
+    }
 ]

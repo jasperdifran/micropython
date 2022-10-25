@@ -2,6 +2,7 @@ page_title = {
     'index': b'Home',
     'about/index': b'What is seL4?',
     'about/performance': b'seL4 Benchmarks',
+    'about/more-research': b'Ongoing and future fundamental research on seL4 and trustworthy systems',
     'foundation/index': b'The seL4 Foundation',
     'foundation/governance': b'Governance',
     'foundation/board': b'Governance',
@@ -18,4 +19,8 @@ page_title = {
     'contribute/index': b'Contribute',
     'use/index': b'Retrofit',
     'learn/index': b'Learn',
+    'info/index': b'More Info',
+    'news/2022': b'News about seL4 and the seL4 Foundation',
+    'news/2021': b'News about seL4 and the seL4 Foundation',
+    'news/2020': b'News about seL4 and the seL4 Foundation',
 }
