@@ -6,6 +6,7 @@ from phew.stream import Reader
 
 from metadata.breadcrumbs import breadcrumbs
 from metadata.nav import nav
+from metadata.page_title import page_title
 
 from phew.stream import p
 import cptxrx
@@ -19,34 +20,46 @@ def make_breadcrumbs(page_name):
     return []
   else:
     crumbs = breadcrumbs[pages[0]][pages[1]]
-
-  res = b"<ul>"
+  print("Crumbs", crumbs)
+  res = b"\n<ul>\n"
   for item in crumbs:
-    res += b'<li href="' + item['url'] + b'">' + item['name'] + b'</li>'
-  res += b'</ul>'
+    res += b'\t<li><a href="' + item['url'] + b'">' + item['name'] + b'</a></li>\n'
+  res += b'</ul>\n'
   return res
 
 
-def render_nav():
-  res = b'<ul>'
+def render_nav(page_name):
+  res = b''
+  group = page_name.split('/')[0]
+
   for item in nav:
-    res += b'<li href="' + item['url'] + b'">' + item['name'] + b'</li>'
-    if (item['children'] != None):
-      res += b'<ul>'
+    activeClass = b'active' if item['url'].decode()[1:].startswith(group) else b''
+    if page_name == 'index':
+      activeClass = b'active' if item['url'] == b'/' else b''
+
+    # res += b'<li><a href="' + item['url'] + b'">' + item['name'] + b'</a></li>'
+    if (item['children'] and item['children'] != []):
+      res += b'<li class="dropdown ' + activeClass + '"><a class="dropdown-toggle" data-toggle="dropdown" href="' + item['url'] + '">' + item['name'] + ' <span class="caret"></span></a>'
+      res += b'<ul class="dropdown-menu">'
       for child in item['children']:
-        res += b'<li href="' + child['url'] + b'">' + child['name'] + b'</li>'
-      res += b'</ul>'
-  res += b'</ul>'
+        res += b'<li><a href="' + child['url'] + b'">' + child['name'] + b'</a></li>'
+      res += b'</ul></li>'
+    else:
+      res += b'<li class="' + activeClass + '"><a href="' + item['url'] + b'">' + item['name'] + b'</a></li>'
   return res
 
-def page_response(page_name):
-  content = b''
-  content += fs.readfile('/templates/sel4header.html')
-  content += render_nav()
-  content += make_breadcrumbs(page_name)
-  content += fs.readfile('/content/' + page_name + '.html')
-  content += fs.readfile('/templates/sel4footer.html')
+def page_response(page_name, addBreadcrumbs=True):
+  navigation = render_nav(page_name)
+  breadcrumbs = make_breadcrumbs(page_name) if addBreadcrumbs else b''
+  title = page_title[page_name]
+  page_content = fs.readfile('/content/' + page_name + '.html')
+  content = b''.join([b for b in render_template('sel4header.html', \
+    navigation=navigation, breadcrumbs=breadcrumbs, title=title, page_content=page_content)])
   return content
+
+@server.route('/', methods=['GET'])
+def index(request):
+  return page_response('index', addBreadcrumbs=False), 200, 'text/html'
 
 @server.route('/[page_name]', methods=['GET'])
 def page(request, page_name):
@@ -72,13 +85,14 @@ def seL4_whitepaper(request):
 
 @server.route("/css/<name>", methods=["GET"])
 def style_files(request, name):
+  print("Got style file request", name)
   return FileResponse(f"content/css/{name}")
 
 @server.route("/js/<name>", methods=["GET"])
 def script_files(request, name):
   return FileResponse(f"content/js/{name}")
 
-@server.route("/img/<name>", methods=["GET"])
+@server.route("/images/[name]", methods=["GET"])
 def image_files(request, name):
   return FileResponse(f"content/images/{name}")
 

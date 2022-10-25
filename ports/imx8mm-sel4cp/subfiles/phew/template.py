@@ -1,4 +1,5 @@
 import cpfs
+from phew.server import pdict
 
 def render_template(template, **kwargs):
   # read the whole template file, we could work on single lines but
@@ -20,6 +21,7 @@ def render_template(template, **kwargs):
       break
 
     expression = data[start + 2:end].strip()
+    print("Expression")
 
     # output the bit before the tag
     yield data[token_caret:start]
@@ -34,20 +36,21 @@ def render_template(template, **kwargs):
     # parse the expression
     if expression.decode("utf-8") in params:
       result = params[expression.decode("utf-8")]
-      result = result.replace("&", "&amp;")
-      result = result.replace('"', "&quot;")
-      result = result.replace("'", "&apos;")
-      result = result.replace(">", "&gt;")
-      result = result.replace("<", "&lt;")
+      # result = result.replace(b"&", b"&amp;")
+      # result = result.replace(b'"', b"&quot;")
+      # result = result.replace(b"'", b"&apos;")
+      # result = result.replace(b">", b"&gt;")
+      # result = result.replace(b"<", b"&lt;")
     else:
-      # Only accepting render_template right now
       if expression.startswith(b"render_template"):
         if (expression[16] == ord("'") or expression[16] == ord('"')):
           result = render_template(expression[17:-2].decode("utf-8"), **kwargs)
         else:
           result = render_template(params[expression[16:-1].decode("utf-8")], **kwargs)
       else:
-        result = b''
+        print("Eval result")
+        result = eval(expression, globals(), params)
+        print("Got result", result)
 
     if type(result).__name__ == "generator":
       # if expression returned a generator then iterate it fully
@@ -57,7 +60,9 @@ def render_template(template, **kwargs):
     else:
       # yield the result of the expression
       if result:
-        yield str(result).encode("utf-8")
+        print("Yielding result")
+        yield result#str(result).encode("utf-8")
+        print("Yielded")
 
     # discard the parsed bit
     token_caret = end + 2

@@ -3,7 +3,7 @@ from phew.stream import p
 import cpfs 
 import utime as time
 
-content_len_max = 1024 * 128 # 128kb
+content_len_max = 2048 * 256 # 524kb
 
 _routes = []
 catchall_handler = None

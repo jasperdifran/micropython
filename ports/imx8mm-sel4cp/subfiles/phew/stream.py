@@ -4,7 +4,7 @@ A simple stream class for the Phew framework.
 
 import cptxrx
 
-verbose = True
+verbose = False
 
 def p(*args):
     if verbose:
