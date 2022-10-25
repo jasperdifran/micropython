@@ -20,6 +20,9 @@ nav = [
             {'name': b'About the seL4 Foundation', 'url': b'/foundation'},
             {'name': b'Governance', 'url': b'/foundation/governance'},
             {'name': b'Governing Board', 'url': b'/foundation/board'},
+            {'name': b'TSC', 'url': b'/foundation/tsc'},
+            {'name': b'Membership', 'url': b'/foundation/membership'},
+            {'name': b'Join the Foundation now!', 'url': b'/foundation/join'},
         ]
     },
     {
