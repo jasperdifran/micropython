@@ -18,6 +18,10 @@
 
 #include <shared/memzip/memzip.h>
 
+typedef unsigned int sel4cp_channel;
+
+void req_file(char *filename);
+
 STATIC mp_obj_t py_cpfs_info(void) {
     return mp_obj_new_str("Core Platform File System", 24);
 }
@@ -28,6 +32,10 @@ STATIC mp_obj_t py_cpfs_readfile(mp_obj_t filename_in) {
     const char *filename = mp_obj_str_get_str(filename_in);
     void *data = NULL;
     size_t len = 0;
+
+    printf("Reading a file, about to notify\n");
+    req_file("somfile");
+    printf("Notified\n");
 
     MEMZIP_RESULT err = memzip_locate(filename, &data, &len);
     if (err != MZ_OK) {

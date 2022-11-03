@@ -35,7 +35,7 @@ void do_str(const char *src, mp_parse_input_kind_t input_kind) {
 
 static char *stack_top;
 #if MICROPY_ENABLE_GC
-static char heap[2048 * 512];
+static char heap[2048 * 128] = {0};
 #endif
 
 /* Buffer for us to read from and write to */
