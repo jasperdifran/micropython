@@ -63,7 +63,6 @@ SRC_C = \
 	modcptxrx.c \
 	modcpfs.c \
 	modutime.c \
-	time_core.c \
 
 SRC_C += \
     shared/memzip/import.c \
