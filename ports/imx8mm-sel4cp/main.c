@@ -57,7 +57,10 @@ void run_webserver(char *rx_buf, char *tx_buf, unsigned int *len)
     gc_init(heap, heap + sizeof(heap));
     mp_init();
 
-    pyexec_file_if_exists("websrv.py");
+    int status = pyexec_file_if_exists("websrv.py");
+    if (status != 0) {
+        printf("Exited!\n");
+    }
 
     mp_deinit();
     return;
