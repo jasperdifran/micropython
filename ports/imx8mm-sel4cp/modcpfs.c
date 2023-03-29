@@ -21,6 +21,7 @@
 typedef unsigned int sel4cp_channel;
 
 void req_file(char *filename);
+void stat_file(char *filename);
 
 STATIC mp_obj_t py_cpfs_info(void) {
     return mp_obj_new_str("Core Platform File System", 24);
@@ -32,6 +33,8 @@ STATIC mp_obj_t py_cpfs_readfile(mp_obj_t filename_in) {
     const char *filename = mp_obj_str_get_str(filename_in);
     void *data = NULL;
     size_t len = 0;
+
+    stat_file("otherfile");
 
     printf("Reading a file, about to notify\n");
     req_file("somfile");
@@ -51,6 +54,8 @@ STATIC mp_obj_t py_cpfs_stat(mp_obj_t filename_in) {
     const char *filename = mp_obj_str_get_str(filename_in);
 
     MEMZIP_FILE_INFO res;
+
+    
 
     if (memzip_stat(filename, &res) == MZ_NO_FILE) {
         // mp_obj_print_exception(&mp_plat_print, mp_obj_new_str("File not found", 14));
