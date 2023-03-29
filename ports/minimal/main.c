@@ -55,8 +55,8 @@ int main(int argc, char **argv) {
         }
     }
     #else
-    // pyexec_friendly_repl();
     #endif
+    pyexec_friendly_repl();
     // do_str("print('hello world!', list(x+1 for x in range(10)), end='eol\\n')", MP_PARSE_SINGLE_INPUT);
     // do_str("for i in range(10):\r\n  print(i)", MP_PARSE_FILE_INPUT);
     unsigned int tx_length_backer = 0;
