@@ -12,7 +12,7 @@ MICROPY_ROM_TEXT_COMPRESSION ?= 1
 include $(TOP)/py/py.mk
 
 ifeq ($(CROSS), 1)
-CROSS_COMPILE ?= arm-none-eabi-
+CROSS_COMPILE ?= arm-linux-gnueabi-
 endif
 
 INC += -I.
