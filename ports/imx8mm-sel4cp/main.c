@@ -42,28 +42,64 @@ static char heap[2048 * 128] = {0};
 #endif
 
 /* Buffer for us to read from and write to */
+// TODO make rx_buffer and data the same thing
 char *rx_buffer;
 char *tx_buffer;
 unsigned int *tx_length;
+void *data;
+int data_len;
+void *private_data;
+int status;
 
-void run_webserver(char *rx_buf, char *tx_buf, unsigned int *len)
+int run_webserver(char *req_buf, void *private_data_arg, char *tx_buf, unsigned int *len)
 {
     int stack_dummy;
     stack_top = (char *)&stack_dummy;
-    rx_buffer = rx_buf;
+    rx_buffer = req_buf;
     tx_buffer = tx_buf;
     tx_length = len;
+
+    private_data = private_data_arg;
 
     gc_init(heap, heap + sizeof(heap));
     mp_init();
 
     int status = pyexec_file_if_exists("websrv.py");
-    if (status != 0) {
+    if (status != 0)
+    {
         printf("Exited!\n");
     }
 
     mp_deinit();
-    return;
+    printf("Post deinit!\n");
+    return 0;
+}
+
+int run_cont(char *py_file_to_run, int status_arg, void *data_arg, int data_arg_len, void *private_data_arg, char *tx_buf, unsigned int *len)
+{
+    int stack_dummy;
+    stack_top = (char *)&stack_dummy;
+    tx_buffer = tx_buf;
+    tx_length = len;
+
+    data = data_arg;
+    data_len = data_arg_len;
+    private_data = private_data_arg;
+
+    status = status_arg;
+
+    gc_init(heap, heap + sizeof(heap));
+    mp_init();
+
+    int status = pyexec_file_if_exists(py_file_to_run);
+    if (status != 0)
+    {
+        printf("Exited!\n");
+    }
+
+    mp_deinit();
+    printf("Post deinit!\n");
+    return 0;
 }
 
 #if MICROPY_ENABLE_GC

@@ -51,8 +51,6 @@ class Request:
         # self.uri = '/index' if uri == '/' else uri
         self.start_time = time.ticks_ms()
         self.protocol = protocol
-        self.form = {}
-        self.data = {}
         self.query = {}
         self.headers = {}
         query_string_start = (
@@ -65,10 +63,8 @@ class Request:
 
     def __str__(self):
         return f"""\
-request: {self.method} {self.path} {self.protocol}
-headers: {self.headers}
-form: {self.form}
-data: {self.data}"""
+request: {self.method} {self.uri} {self.protocol}
+headers: {self.headers}"""
 
 
 class Response:
@@ -319,9 +315,11 @@ status_message_map = {
 
 # handle an incoming request to the web server
 def handle_request(reader, writer):
-    response = None
+    # response = None
 
     request_start_time = time.ticks_ms()
+
+    print(f"Req start time {request_start_time}")
 
     request_line = reader.readline()
     try:
@@ -331,19 +329,30 @@ def handle_request(reader, writer):
         return
 
     request = Request(method, uri, protocol)
+    headerStr = reader.peek(b"\r\n\r\n").decode()
     request.headers = _parse_headers(reader)
 
     route = _match_route(request)
     if route:
         print(f"Path: {request.path}")
-        continuation.storereq(request)
-        route.call_handler(request)
+        # continuation.storereq(request)
+        private_data = route.call_handler(request)
+        print(f"Private data: {private_data}")
+
+        private_data["start_time"] = request_start_time
+        private_data["headers"] = headerStr
+        private_data["file_size"] = None
+        private_data["method"] = method
+        private_data["path"] = request.path
+        continuation.storeprivatedata(private_data)
     elif catchall_handler:
         handle_request_cb(reader, writer, request, catchall_handler(request))
 
 
 def handle_request_cb(reader, writer, request, response):
-    p(f"Request took {time.ticks_ms() - request.start_time}ms")
+    print("handle_request_cb")
+    print(f"Request: {request['method']} {request['path']}")
+    # print(f"Request took {time.ticks_ms() - request.start_time}ms")
 
     # if shorthand body generator only notation used then convert to tuple
     if type(response).__name__ == "generator":
@@ -374,10 +383,7 @@ def handle_request_cb(reader, writer, request, response):
     # blank line to denote end of headers
     writer.write("\r\n".encode("ascii"))
 
-    if isinstance(response, FileResponse):
-        # We know it's a continuation
-        pass
-    elif type(response.body).__name__ == "generator":
+    if type(response.body).__name__ == "generator":
         for chunk in response.body:
             writer.write(chunk)
     elif isinstance(response.body, str):
@@ -385,9 +391,10 @@ def handle_request_cb(reader, writer, request, response):
     elif isinstance(response.body, bytes):
         writer.write(response.body)
 
-    processing_time = time.ticks_ms() - request_start_time
+    continuation.finish()
+    processing_time = time.ticks_ms() - request['start_time']
     print(
-        f"> {request.method} {request.path} ({response.status} {status_message}) [{processing_time} ms]"
+        f"> {request['method']} {request['uri']} ({response.status} {status_message}) [{processing_time} ms]"
     )
 
 
