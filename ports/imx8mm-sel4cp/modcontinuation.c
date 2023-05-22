@@ -48,6 +48,8 @@ STATIC mp_obj_t py_continuation_storeprivatedata(mp_obj_t data)
     private_data_t *priv = (private_data_t *)private_data;
     priv->page_req = mp_obj_get_int(mp_obj_dict_get(data, mp_obj_new_str("page_req", 8)));
     priv->start_time = mp_obj_get_int(mp_obj_dict_get(data, mp_obj_new_str("start_time", 10)));
+    priv->addBreadcrumbs = mp_obj_get_int(mp_obj_dict_get(data, mp_obj_new_str("addBreadcrumbs", 14)));
+
     if (mp_obj_dict_get(data, mp_obj_new_str("file_size", 9)) == mp_const_none)
     {
         priv->file_size = -1;
@@ -56,21 +58,17 @@ STATIC mp_obj_t py_continuation_storeprivatedata(mp_obj_t data)
     {
         priv->file_size = mp_obj_get_int(mp_obj_dict_get(data, mp_obj_new_str("file_size", 9)));
     }
-    const char *uri_str = mp_obj_str_get_str(mp_obj_dict_get(data, mp_obj_new_str("uri", 3)));
     const char *headers_str = mp_obj_str_get_str(mp_obj_dict_get(data, mp_obj_new_str("headers", 7)));
     const char *method_str = mp_obj_str_get_str(mp_obj_dict_get(data, mp_obj_new_str("method", 6)));
-    const char *path_str = mp_obj_str_get_str(mp_obj_dict_get(data, mp_obj_new_str("path", 4)));
+    const char *pagePath_str = mp_obj_str_get_str(mp_obj_dict_get(data, mp_obj_new_str("pagePath", 8)));
+    const char *filePath_str = mp_obj_str_get_str(mp_obj_dict_get(data, mp_obj_new_str("filePath", 8)));
 
-    int urilen = strlen(uri_str);
     int headerslen = strlen(headers_str);
     int methodlen = strlen(method_str);
-    int pathlen = strlen(path_str);
+    int pagePathLen = strlen(pagePath_str);
+    int filePath = strlen(filePath_str);
 
-    priv->uri = (char *)priv + sizeof(private_data_t);
-    strcpy(priv->uri, uri_str);
-    priv->uri[urilen] = '\0';
-
-    priv->headers = priv->uri + urilen + 1;
+    priv->headers = (char *)priv + sizeof(private_data_t);
     strcpy(priv->headers, headers_str);
     priv->headers[headerslen] = '\0';
 
@@ -78,9 +76,14 @@ STATIC mp_obj_t py_continuation_storeprivatedata(mp_obj_t data)
     strcpy(priv->method, method_str);
     priv->method[methodlen] = '\0';
 
-    priv->path = priv->method + methodlen + 1;
-    strcpy(priv->path, path_str);
-    priv->path[pathlen] = '\0';
+    priv->pagePath = priv->method + methodlen + 1;
+    strcpy(priv->pagePath, pagePath_str);
+    priv->pagePath[pagePathLen] = '\0';
+
+    priv->filePath = priv->pagePath + pagePathLen + 1;
+    strcpy(priv->filePath, filePath_str);
+    priv->filePath[filePath] = '\0';
+
     return MP_OBJ_SMALL_INT_VALUE(0);
 }
 // {
@@ -135,13 +138,14 @@ MP_DEFINE_CONST_FUN_OBJ_1(continuation_storeprivatedata_obj, py_continuation_sto
 STATIC mp_obj_t py_continuation_loadprivatedata(void)
 {
     private_data_t *priv = (private_data_t *)private_data;
-    mp_obj_t newob = mp_obj_new_dict(6);
+    mp_obj_t newob = mp_obj_new_dict(7);
     mp_obj_dict_store(newob, mp_obj_new_str("page_req", 8), mp_obj_new_int(priv->page_req));
     mp_obj_dict_store(newob, mp_obj_new_str("start_time", 10), mp_obj_new_int(priv->start_time));
-    mp_obj_dict_store(newob, mp_obj_new_str("uri", 3), mp_obj_new_str(priv->uri, strlen(priv->uri)));
+    mp_obj_dict_store(newob, mp_obj_new_str("addBreadcrumbs", 14), mp_obj_new_int(priv->addBreadcrumbs));
     mp_obj_dict_store(newob, mp_obj_new_str("headers", 7), mp_obj_new_str(priv->headers, strlen(priv->headers)));
     mp_obj_dict_store(newob, mp_obj_new_str("method", 6), mp_obj_new_str(priv->method, strlen(priv->method)));
-    mp_obj_dict_store(newob, mp_obj_new_str("path", 4), mp_obj_new_str(priv->path, strlen(priv->path)));
+    mp_obj_dict_store(newob, mp_obj_new_str("pagePath", 8), mp_obj_new_str(priv->pagePath, strlen(priv->pagePath)));
+    mp_obj_dict_store(newob, mp_obj_new_str("filePath", 8), mp_obj_new_str(priv->filePath, strlen(priv->filePath)));
     return newob;
 }
 

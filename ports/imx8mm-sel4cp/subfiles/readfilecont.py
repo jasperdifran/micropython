@@ -13,7 +13,7 @@ def make_breadcrumbs(page_name):
     # We assume that the page exists
     pages = page_name.split("/")
     crumbs = []
-    if len(pages) == 0:
+    if len(pages) == 0 or page_name == "index":
         return b""
     else:
         crumbs = breadcrumbs[pages[0]][pages[1]]
@@ -75,19 +75,19 @@ def render_nav(page_name):
     return res
 
 
-def build_page(page_name, page_content, addBreadcrumbs=True):
-    logo_image = b"logo-text-white.svg"
-    logo_alt = b"seL4"
-    if page_name.startswith(b"foundation/summit"):
-        logo_image = b"sel4-summit-logo.svg"
-        logo_alt = b"seL4 summit logo"
-    elif page_name.startswith(b"foundation"):
-        logo_image = b"sel4-foundation-logo.svg"
-        logo_alt = b"seL4 foundation logo"
+def build_page(pagePath, pageContent, addBreadcrumbs=True):
+    logoImage = b"logo-text-white.svg"
+    logoAlt = b"seL4"
+    if pagePath.startswith(b"foundation/summit"):
+        logoImage = b"sel4-summit-logo.svg"
+        logoAlt = b"seL4 summit logo"
+    elif pagePath.startswith(b"foundation"):
+        logoImage = b"sel4-foundation-logo.svg"
+        logoAlt = b"seL4 foundation logo"
 
-    navigation = render_nav(page_name)
-    breadcrumbs = make_breadcrumbs(page_name) if addBreadcrumbs else b""
-    title = page_title[page_name]
+    navigation = render_nav(pagePath)
+    breadcrumbs = make_breadcrumbs(pagePath) if addBreadcrumbs else b""
+    title = page_title[pagePath]
     content = b"".join(
         [
             b
@@ -96,9 +96,9 @@ def build_page(page_name, page_content, addBreadcrumbs=True):
                 navigation=navigation,
                 breadcrumbs=breadcrumbs,
                 title=title,
-                page_content=page_content,
-                logo_image=logo_image,
-                logo_alt=logo_alt,
+                pageContent=pageContent,
+                logoImage=logoImage,
+                logoAlt=logoAlt,
             )
         ]
     )
@@ -108,7 +108,7 @@ def build_page(page_name, page_content, addBreadcrumbs=True):
 req = continuation.loadprivatedata()
 print("Got request", req["page_req"])
 print("Got request", req["start_time"])
-print("Got request", req["uri"])
+print("Got request", req["pagePath"])
 print("got request", req["method"])
 page_cont = continuation.loaddata()
 cont_len = len(page_cont)
@@ -126,7 +126,7 @@ cont_len = len(page_cont)
 # print("last 3", page_cont[-3:])
 
 print("Got page content len", len(page_cont))
-finished_page = build_page("index", page_cont, False)
+finished_page = build_page(req["pagePath"], page_cont, False)
 print("Got page content len", len(finished_page))
 
 handle_request_cb(None, Writer(), req, (finished_page, 200, "text/html"))

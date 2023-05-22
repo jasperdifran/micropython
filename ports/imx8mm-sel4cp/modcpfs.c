@@ -62,9 +62,8 @@ STATIC mp_obj_t py_cpfs_readfileasync(mp_obj_t filename_in, mp_obj_t len_to_read
 
     // stat_file("otherfile");
 
-    printf("Reading a file, about to notify\n");
-    req_file("content/index.html", mp_obj_get_int(len_to_read));
-    printf("Notified\n");
+    const char *filename = mp_obj_str_get_str(filename_in);
+    req_file(filename, mp_obj_get_int(len_to_read));
 
     // MEMZIP_RESULT err = memzip_locate(filename, &data, &len);
     // if (err != MZ_OK)

@@ -6,24 +6,24 @@ def render_template(template, **kwargs):
   # the performance is much worse - so long as our templates are
   # just a handful of kB it's ok to do this
   data = cpfs.readfile('templates/' + template + ".html")
-  token_caret = 0
+  tokenCaret = 0
 
   while True:
     # find the next tag that needs evaluating
-    start = data.find(b"{{", token_caret)
+    start = data.find(b"{{", tokenCaret)
     end = data.find(b"}}", start)
 
     match = start != -1 and end != -1
 
     # no more magic to handle, just return what's left
     if not match:
-      yield data[token_caret:]
+      yield data[tokenCaret:]
       break
 
     expression = data[start + 2:end].strip()
 
     # output the bit before the tag
-    yield data[token_caret:start]
+    yield data[tokenCaret:start]
 
     # merge locals with the supplied named arguments and
     # the response object
@@ -60,7 +60,7 @@ def render_template(template, **kwargs):
         yield result
 
     # discard the parsed bit
-    token_caret = end + 2
+    tokenCaret = end + 2
 
 
 def template_exists(template):

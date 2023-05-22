@@ -1,6 +1,7 @@
 from phew import server
 from phew.server import FileResponse
 from phew.stream import Reader
+from metadata.breadcrumbs import breadcrumbs
 
 import time
 
@@ -10,17 +11,67 @@ from phew.stream import p
 import cptxrx
 import cpfs as fs
 
+supportedFileTypes = (".ico", ".css", ".js", ".png", ".pdf", ".jpg", ".jpeg", ".gif", ".svg")
 
-def page_response(request, page_name, addBreadcrumbs=True):
+def page_response(request, pagePath, addBreadcrumbs=True):
     print("Got page request")
     # continuation.store(request)
-    # fs.readfileasync("/content/" + page_name + ".html")
-    fs.statasync("/content/" + page_name + ".html")
+    # fs.readfileasync("/content/" + pagePath + ".html")
+    
+    filePath = "/content/" + pagePath + ".html"
+    fs.statasync(filePath)
 
     return {
         "page_req": 1,
-        "uri": request.uri,
+        "pagePath": pagePath,
+        "filePath": filePath,
+        "addBreadcrumbs": addBreadcrumbs
     }
+
+def file_response(request, pagePath):
+    filePath = "/content/" + pagePath
+    fs.statasync(filePath)
+
+    return {
+        "page_req": 0,
+        "pagePath": pagePath,
+        "filePath": filePath,
+        "addBreadcrumbs": False,
+    }
+
+def standardise_path(path:str, isFile:bool):
+    if path.startswith("/"):
+        path = path[1:]
+    if path.endswith("/"):
+        path = path[:-1]
+    
+    if (isFile):
+        return path
+    
+    if (path == ""):
+        return "index"
+    elif (path.endswith(".html")):
+        path = path[:-5]
+    elif (path.endswith(".htm")):
+        path = path[:-4]
+    
+    # If path is to a directory, add 'index' to the end. Breadcrumbs.py holds the sitemap
+    pathParts = path.split("/")
+    currPart = breadcrumbs
+    isList = True
+
+    # We do a loop for if in future we add deeper pages
+    for part in pathParts:
+        if (part in currPart):
+            currPart = currPart[part]
+            isList = type(currPart) == list
+        else:
+            return ""
+
+    if (not isList):
+        path += "/index"
+
+    return path
 
 
 @server.route("/", methods=["GET"])
@@ -29,8 +80,22 @@ def index(request):
     return page_response(request, "index", addBreadcrumbs=False)
 
 
-@server.route("/[page_name]", methods=["GET"])
-def page(request, page_name):
+@server.route("/[pagePath]", methods=["GET"])
+def page(request, pagePath):
+    print(f"Serving {pagePath}")
+    if (type(pagePath) == bytes):
+        pagePath = pagePath.decode("utf-8")
+    # isFile = pagePath.endswith(supportedFileTypes)
+    pagePath = standardise_path(pagePath, False)
+    print(f"Standardised path: {pagePath}")
+
+    if (pagePath == ""):
+        return "Not found", 400
+    elif (False):
+        return file_response(request, pagePath)
+    else:
+        return page_response(request, pagePath)
+    
     print("Got page request")
     if "." in page_name:
         return "Not found", 404
@@ -44,36 +109,36 @@ def page(request, page_name):
     return page_response(request, page_name), 200, "text/html"
 
 
-@server.route("/favicon.ico", methods=["GET"])
-def favicon(request):
-    return FileResponse("images/favicon.ico")
+# @server.route("/favicon.ico", methods=["GET"])
+# def favicon(request):
+#     return FileResponse("images/favicon.ico")
 
 
-@server.route("/about/seL4-whitepaper.pdf", methods=["GET"])
-def seL4_whitepaper(request):
-    p("Got whitepaper request")
-    return FileResponse("templates/about/seL4-whitepaper.pdf", request.headers)
+# @server.route("/about/seL4-whitepaper.pdf", methods=["GET"])
+# def seL4_whitepaper(request):
+#     p("Got whitepaper request")
+#     return FileResponse("templates/about/seL4-whitepaper.pdf", request.headers)
 
 
-@server.route("/css/<name>", methods=["GET"])
-def style_files(request, name):
-    print("Got style file request", name)
-    return FileResponse(f"content/css/{name}")
+# @server.route("/css/<name>", methods=["GET"])
+# def style_files(request, name):
+#     print("Got style file request", name)
+#     return FileResponse(f"content/css/{name}")
 
 
-@server.route("/js/<name>", methods=["GET"])
-def script_files(request, name):
-    return FileResponse(f"content/js/{name}")
+# @server.route("/js/<name>", methods=["GET"])
+# def script_files(request, name):
+#     return FileResponse(f"content/js/{name}")
 
 
-@server.route("/images/[name]", methods=["GET"])
-def image_files(request, name):
-    return FileResponse(f"content/images/{name}")
+# @server.route("/images/[name]", methods=["GET"])
+# def image_files(request, name):
+#     return FileResponse(f"content/images/{name}")
 
 
-@server.route("/docs/<group>/<name>", methods=["GET"])
-def docs_files(request, group, name):
-    return FileResponse(f"content/docs/{group}/{name}")
+# @server.route("/docs/<group>/<name>", methods=["GET"])
+# def docs_files(request, group, name):
+#     return FileResponse(f"content/docs/{group}/{name}")
 
 
 # catchall example

@@ -7,12 +7,13 @@
 typedef struct
 {
     int page_req;
+    int addBreadcrumbs;
     int start_time;
     int file_size;
-    char *uri;
     char *headers;
     char *method;
-    char *path;
+    char *pagePath;
+    char *filePath;
 } private_data_t;
 
 typedef struct

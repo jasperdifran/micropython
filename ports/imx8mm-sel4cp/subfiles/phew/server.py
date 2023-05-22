@@ -99,74 +99,76 @@ content_type_map = {
 
 class FileResponse(Response):
     def __init__(self, file, req_headers={}):
-        self.status = 404
-        self.headers = {"Content-Length": 0}
-        self.file = file
-        self.range_start = 0
-        self.range_end = 0
-        self.chunked = False
+        # self.status = 404
+        # self.headers = {"Content-Length": 0}
+        # self.file = file
+        # self.range_start = 0
+        # self.range_end = 0
+        # self.chunked = False
 
-        response = cpfs.stat(self.file)
-        if isinstance(response, tuple):
-            # Show we accept byte ranges
-            self.headers["Accept-Ranges"] = "bytes"
+        # response = cpfs.stat(self.file)
+        # if isinstance(response, tuple):
+        #     # Show we accept byte ranges
+        #     self.headers["Accept-Ranges"] = "bytes"
 
-            # Check if file is a directory
-            if response[3] == 1:
-                self.headers["Content-Length"] = 0
-                return
-            if "range" in req_headers:
-                range_header = req_headers["range"]
-                # self.range_start = int(range_header[6:range_header.find("-")])
+        #     # Check if file is a directory
+        #     if response[3] == 1:
+        #         self.headers["Content-Length"] = 0
+        #         return
+        #     if "range" in req_headers:
+        #         range_header = req_headers["range"]
+        #         # self.range_start = int(range_header[6:range_header.find("-")])
 
-                range = range_header[6:]
-                range_split = range.split("-")
-                if len(range_split[1]) > 0:
-                    self.range_end = int(range_split[1])
-                else:
-                    self.range_end = response[0] - 1
-                self.range_start = int(range_split[0])
-                # self.range_end = int(range_header[range_header.find("-") + 1:])
+        #         range = range_header[6:]
+        #         range_split = range.split("-")
+        #         if len(range_split[1]) > 0:
+        #             self.range_end = int(range_split[1])
+        #         else:
+        #             self.range_end = response[0] - 1
+        #         self.range_start = int(range_split[0])
+        #         # self.range_end = int(range_header[range_header.find("-") + 1:])
 
-                # Check if requested range is too big, if so truncate it
-                if self.range_end - self.range_start > content_len_max:
-                    self.range_end = self.range_start + content_len_max - 1
+        #         # Check if requested range is too big, if so truncate it
+        #         if self.range_end - self.range_start > content_len_max:
+        #             self.range_end = self.range_start + content_len_max - 1
 
-                self.status = 206
-                self.headers[
-                    "Content-Range"
-                ] = f"bytes {self.range_start}-{self.range_end}/{response[0]}"
-                self.headers["Content-Length"] = str(
-                    self.range_end - self.range_start + 1
-                )
-                self.chunked = True
+        #         self.status = 206
+        #         self.headers[
+        #             "Content-Range"
+        #         ] = f"bytes {self.range_start}-{self.range_end}/{response[0]}"
+        #         self.headers["Content-Length"] = str(
+        #             self.range_end - self.range_start + 1
+        #         )
+        #         self.chunked = True
 
-            # Check if requested file is too big and needs to be chunked
-            elif response[0] > content_len_max:
-                self.status = 206
-                self.range_end = content_len_max - 1
-                self.headers[
-                    "Content-Range"
-                ] = f"bytes {self.range_start}-{self.range_end}/{response[0]}"
-                self.headers["Content-Length"] = content_len_max
-                self.chunked = True
-            else:
-                self.status = 200
-                self.headers["Content-Length"] = response[0]
+        #     # Check if requested file is too big and needs to be chunked
+        #     elif response[0] > content_len_max:
+        #         self.status = 206
+        #         self.range_end = content_len_max - 1
+        #         self.headers[
+        #             "Content-Range"
+        #         ] = f"bytes {self.range_start}-{self.range_end}/{response[0]}"
+        #         self.headers["Content-Length"] = content_len_max
+        #         self.chunked = True
+        #     else:
+        #         self.status = 200
+        #         self.headers["Content-Length"] = response[0]
 
-            extension = self.file.split(".")[-1].lower()
-            if extension in content_type_map:
-                self.headers["Content-Type"] = content_type_map[extension]
+        #     extension = self.file.split(".")[-1].lower()
+        #     if extension in content_type_map:
+        #         self.headers["Content-Type"] = content_type_map[extension]
+        pass
 
     def sendResponse(self, writer):
-        if self.status == 206:
-            if self.chunked:
-                writer.writefilerange(self.file, self.range_start, self.range_end)
-            else:
-                pass
-        elif self.status == 200:
-            writer.writefile(self.file)
-            pass
+        # if self.status == 206:
+        #     if self.chunked:
+        #         writer.writefilerange(self.file, self.range_start, self.range_end)
+        #     else:
+        #         pass
+        # elif self.status == 200:
+        #     writer.writefile(self.file)
+        #     pass
+        pass
 
 
 class Route:
@@ -343,7 +345,6 @@ def handle_request(reader, writer):
         private_data["headers"] = headerStr
         private_data["file_size"] = None
         private_data["method"] = method
-        private_data["path"] = request.path
         continuation.storeprivatedata(private_data)
     elif catchall_handler:
         handle_request_cb(reader, writer, request, catchall_handler(request))
@@ -351,7 +352,7 @@ def handle_request(reader, writer):
 
 def handle_request_cb(reader, writer, request, response):
     print("handle_request_cb")
-    print(f"Request: {request['method']} {request['path']}")
+    print(f"Request: {request['method']} {request['pagePath']}")
     # print(f"Request took {time.ticks_ms() - request.start_time}ms")
 
     # if shorthand body generator only notation used then convert to tuple
@@ -394,7 +395,7 @@ def handle_request_cb(reader, writer, request, response):
     continuation.finish()
     processing_time = time.ticks_ms() - request['start_time']
     print(
-        f"> {request['method']} {request['uri']} ({response.status} {status_message}) [{processing_time} ms]"
+        f"> {request['method']} {request['pagePath']} ({response.status} {status_message}) [{processing_time} ms]"
     )
 
 

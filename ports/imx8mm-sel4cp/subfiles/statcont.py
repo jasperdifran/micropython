@@ -20,15 +20,17 @@ if status == 0:
     print("stat is_dir", stat[3])
 
     print("page_req", privData["page_req"])
-    print("uri", privData["uri"])
+    print("pagePath", privData["pagePath"])
+    print("filePath", privData["filePath"])
+    
 
-    cpfs.readfileasync("/content/" + privData["uri"] if privData["uri"] != "/" else "index" + ".html", stat[0])
+    cpfs.readfileasync(privData["filePath"], stat[0])
 
 
     # cpfs.statasync("/content/" + privData["page_req"] + ".html")
 else:
     print("stat failed")
-    req = Request("GET", privData["uri"], "HTTP/1.1")
+    req = Request("GET", privData["path"], "HTTP/1.1")
 
     # From here, we either have a file response or a page response.
     # Either way we need to request the file data.
