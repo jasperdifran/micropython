@@ -370,7 +370,6 @@ def handle_request_cb(reader, writer, request, response):
         content_type = response[2] if len(response) >= 3 else "text/html"
         response = Response(body, status=status)
         response.add_header("Content-Type", content_type)
-        # if hasattr(body, '__len__'):
         response.add_header("Content-Length", len(body))
 
     # write status line

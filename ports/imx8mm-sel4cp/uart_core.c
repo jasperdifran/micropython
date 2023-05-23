@@ -7,8 +7,6 @@
  * Core UART functions to implement for a port
  */
 
-// https://github.com/torvalds/linux/blob/master/drivers/tty/serial/fsl_lpuart.c
-
 // Send string of given length
 void mp_hal_stdout_tx_strn(const char *str, mp_uint_t len)
 {

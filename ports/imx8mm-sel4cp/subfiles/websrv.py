@@ -11,11 +11,11 @@ from phew.stream import p
 import cptxrx
 import cpfs as fs
 
-supportedFileTypes = (".ico", ".css", ".js", ".png", ".pdf", ".jpg", ".jpeg", ".gif", ".svg")
+supportedFileTypes = {"ico", "css", "js", "png", "pdf", "jpg", "jpeg", "gif", "svg"}
 
 def page_response(request, pagePath, addBreadcrumbs=True):
     print("Got page request")
-    # continuation.store(request)
+    # continuationstore(request)
     # fs.readfileasync("/content/" + pagePath + ".html")
     
     filePath = "/content/" + pagePath + ".html"
@@ -83,15 +83,14 @@ def index(request):
 @server.route("/[pagePath]", methods=["GET"])
 def page(request, pagePath):
     print(f"Serving {pagePath}")
-    if (type(pagePath) == bytes):
-        pagePath = pagePath.decode("utf-8")
-    # isFile = pagePath.endswith(supportedFileTypes)
-    pagePath = standardise_path(pagePath, False)
+    isFile = pagePath.split(".")[-1] in supportedFileTypes
+    print(f"Is file: {isFile}")
+    pagePath = standardise_path(pagePath, isFile)
     print(f"Standardised path: {pagePath}")
 
     if (pagePath == ""):
         return "Not found", 400
-    elif (False):
+    elif (isFile):
         return file_response(request, pagePath)
     else:
         return page_response(request, pagePath)

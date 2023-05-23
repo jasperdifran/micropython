@@ -2,7 +2,7 @@ from metadata.breadcrumbs import breadcrumbs
 from metadata.nav import nav
 from metadata.page_title import page_title
 from phew.template import render_template, template_exists
-from phew.server import handle_request_cb
+from phew.server import handle_request_cb, content_type_map
 
 from phew.stream import Writer, Reader
 
@@ -111,25 +111,15 @@ print("Got request", req["start_time"])
 print("Got request", req["pagePath"])
 print("got request", req["method"])
 page_cont = continuation.loaddata()
-cont_len = len(page_cont)
-# print("Last 3", page_cont[-3:])
-# for i in range(10):
-#     if (page_cont[cont_len - 1 - i] == 0):
-#         print("Last char is null")
-#         page_cont = page_cont[:-1]
+pageReq = req["page_req"]
 
+contentType = content_type_map[req["pagePath"].split(".")[-1]]
+if (req["page_req"]):
+    print("Got page content len", len(page_cont))
+    page_cont = build_page(req["pagePath"], page_cont, req["addBreadcrumbs"])
+    print("Got page content len", len(page_cont))
 
-# if (page_cont[cont_len - 1] == 0):
-#     print("Last char is null")
-#     page_cont = page_cont[:-1]
-
-# print("last 3", page_cont[-3:])
-
-print("Got page content len", len(page_cont))
-finished_page = build_page(req["pagePath"], page_cont, False)
-print("Got page content len", len(finished_page))
-
-handle_request_cb(None, Writer(), req, (finished_page, 200, "text/html"))
+handle_request_cb(None, Writer(), req, (page_cont, 200, contentType))
 
 # print("Got page content btyes", page_cont)
 # print("Got page content", page_cont.decode())
