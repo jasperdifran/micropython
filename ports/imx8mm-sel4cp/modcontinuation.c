@@ -62,11 +62,15 @@ STATIC mp_obj_t py_continuation_storeprivatedata(mp_obj_t data)
     const char *method_str = mp_obj_str_get_str(mp_obj_dict_get(data, mp_obj_new_str("method", 6)));
     const char *pagePath_str = mp_obj_str_get_str(mp_obj_dict_get(data, mp_obj_new_str("pagePath", 8)));
     const char *filePath_str = mp_obj_str_get_str(mp_obj_dict_get(data, mp_obj_new_str("filePath", 8)));
+    const char *uri_str = mp_obj_str_get_str(mp_obj_dict_get(data, mp_obj_new_str("uri", 3)));
+    const char *protocol_str = mp_obj_str_get_str(mp_obj_dict_get(data, mp_obj_new_str("protocol", 8)));
 
     int headerslen = strlen(headers_str);
     int methodlen = strlen(method_str);
     int pagePathLen = strlen(pagePath_str);
     int filePath = strlen(filePath_str);
+    int uriLen = strlen(uri_str);
+    int protocolLen = strlen(protocol_str);
 
     priv->headers = (char *)priv + sizeof(private_data_t);
     strcpy(priv->headers, headers_str);
@@ -83,6 +87,14 @@ STATIC mp_obj_t py_continuation_storeprivatedata(mp_obj_t data)
     priv->filePath = priv->pagePath + pagePathLen + 1;
     strcpy(priv->filePath, filePath_str);
     priv->filePath[filePath] = '\0';
+
+    priv->uri = priv->filePath + filePath + 1;
+    strcpy(priv->uri, uri_str);
+    priv->uri[uriLen] = '\0';
+
+    priv->protocol = priv->uri + uriLen + 1;
+    strcpy(priv->protocol, protocol_str);
+    priv->protocol[protocolLen] = '\0';
 
     return MP_OBJ_SMALL_INT_VALUE(0);
 }
@@ -146,6 +158,8 @@ STATIC mp_obj_t py_continuation_loadprivatedata(void)
     mp_obj_dict_store(newob, mp_obj_new_str("method", 6), mp_obj_new_str(priv->method, strlen(priv->method)));
     mp_obj_dict_store(newob, mp_obj_new_str("pagePath", 8), mp_obj_new_str(priv->pagePath, strlen(priv->pagePath)));
     mp_obj_dict_store(newob, mp_obj_new_str("filePath", 8), mp_obj_new_str(priv->filePath, strlen(priv->filePath)));
+    mp_obj_dict_store(newob, mp_obj_new_str("uri", 3), mp_obj_new_str(priv->uri, strlen(priv->uri)));
+    mp_obj_dict_store(newob, mp_obj_new_str("protocol", 8), mp_obj_new_str(priv->protocol, strlen(priv->protocol)));
     return newob;
 }
 

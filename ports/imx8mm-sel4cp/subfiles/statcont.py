@@ -1,5 +1,3 @@
-print("statcont")
-
 import continuation
 from phew.server import handle_request_cb
 from phew.stream import Writer
@@ -29,12 +27,5 @@ if status == 0:
 
     # cpfs.statasync("/content/" + privData["page_req"] + ".html")
 else:
-    print("stat failed")
-    req = Request("GET", privData["path"], "HTTP/1.1")
-
-    # From here, we either have a file response or a page response.
-    # Either way we need to request the file data.
-    # BUt if the stat failed and the file doesnt exist, we need to return a 404
-
-    writer = Writer()
-    handle_request_cb(None, writer, req, ("Not found", 404))
+    # Stat failed, file not found, hence return a 404
+    handle_request_cb(Writer(), Request("GET", privData["uri"], "HTTP/1.1"), ("Not found", 404))

@@ -2,7 +2,7 @@ from metadata.breadcrumbs import breadcrumbs
 from metadata.nav import nav
 from metadata.page_title import page_title
 from phew.template import render_template, template_exists
-from phew.server import handle_request_cb, content_type_map
+from phew.server import handle_request_cb, content_type_map, Request
 
 from phew.stream import Writer, Reader
 
@@ -105,21 +105,22 @@ def build_page(pagePath, pageContent, addBreadcrumbs=True):
     return content
 
 
-req = continuation.loadprivatedata()
-print("Got request", req["page_req"])
-print("Got request", req["start_time"])
-print("Got request", req["pagePath"])
-print("got request", req["method"])
+privateData = continuation.loadprivatedata()
+print("Got request", privateData["page_req"])
+print("Got request", privateData["start_time"])
+print("Got privateDatauest", privateData["pagePath"])
+print("got privateDatauest", privateData["method"])
 page_cont = continuation.loaddata()
-pageReq = req["page_req"]
+pageReq = privateData["page_req"]
 
-contentType = content_type_map[req["pagePath"].split(".")[-1]]
-if (req["page_req"]):
+contentType = content_type_map[privateData["pagePath"].split(".")[-1]] if not pageReq else "text/html"
+if (pageReq):
     print("Got page content len", len(page_cont))
-    page_cont = build_page(req["pagePath"], page_cont, req["addBreadcrumbs"])
+    page_cont = build_page(privateData["pagePath"], page_cont, privateData["addBreadcrumbs"])
     print("Got page content len", len(page_cont))
 
-handle_request_cb(None, Writer(), req, (page_cont, 200, contentType))
+
+handle_request_cb(Writer(), Request(privateData['method'], privateData['uri'], privateData['protocol']), (page_cont, 200, contentType))
 
 # print("Got page content btyes", page_cont)
 # print("Got page content", page_cont.decode())

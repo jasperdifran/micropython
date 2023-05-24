@@ -14,6 +14,8 @@ typedef struct
     char *method;
     char *pagePath;
     char *filePath;
+    char *uri;
+    char *protocol;
 } private_data_t;
 
 typedef struct

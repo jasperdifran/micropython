@@ -25,7 +25,7 @@ def page_response(request, pagePath, addBreadcrumbs=True):
         "page_req": 1,
         "pagePath": pagePath,
         "filePath": filePath,
-        "addBreadcrumbs": addBreadcrumbs
+        "addBreadcrumbs": addBreadcrumbs,
     }
 
 def file_response(request, pagePath):
@@ -89,7 +89,7 @@ def page(request, pagePath):
     print(f"Standardised path: {pagePath}")
 
     if (pagePath == ""):
-        return "Not found", 400
+        return "Not found", 404
     elif (isFile):
         return file_response(request, pagePath)
     else:

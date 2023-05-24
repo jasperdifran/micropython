@@ -1,5 +1,5 @@
 # Phew
-from phew.stream import p
+from phew.stream import p, Writer, Reader
 import cpfs
 import utime as time
 import continuation
@@ -338,21 +338,26 @@ def handle_request(reader, writer):
     if route:
         print(f"Path: {request.path}")
         # continuation.storereq(request)
-        private_data = route.call_handler(request)
-        print(f"Private data: {private_data}")
+        response = route.call_handler(request)
+        if (type(response) == tuple):
+            handle_request_cb(writer, request, response)
+        else:
+            print(f"Private data: {response}")
 
-        private_data["start_time"] = request_start_time
-        private_data["headers"] = headerStr
-        private_data["file_size"] = None
-        private_data["method"] = method
-        continuation.storeprivatedata(private_data)
+            # If not a tuple, then it's private data we want to store
+            response["start_time"] = request_start_time
+            response["headers"] = headerStr
+            response["file_size"] = None
+            response["method"] = method
+            response["uri"] = uri
+            response["protocol"] = protocol
+            continuation.storeprivatedata(response)
     elif catchall_handler:
-        handle_request_cb(reader, writer, request, catchall_handler(request))
+        handle_request_cb(writer, request, catchall_handler(request))
 
-
-def handle_request_cb(reader, writer, request, response):
+def handle_request_cb(writer:Writer, request:Request, response):
     print("handle_request_cb")
-    print(f"Request: {request['method']} {request['pagePath']}")
+    print(f"Request: {request.method} {request.uri}")
     # print(f"Request took {time.ticks_ms() - request.start_time}ms")
 
     # if shorthand body generator only notation used then convert to tuple
@@ -374,7 +379,7 @@ def handle_request_cb(reader, writer, request, response):
 
     # write status line
     status_message = status_message_map.get(response.status, "Unknown")
-    writer.write(f"HTTP/1.1 {response.status} {status_message}\r\n".encode("utf-8"))
+    writer.write(f"{request.protocol} {response.status} {status_message}\r\n".encode("utf-8"))
 
     # write headers
     for key, value in response.headers.items():
@@ -392,9 +397,9 @@ def handle_request_cb(reader, writer, request, response):
         writer.write(response.body)
 
     continuation.finish()
-    processing_time = time.ticks_ms() - request['start_time']
+    processing_time = time.ticks_ms() - request.start_time
     print(
-        f"> {request['method']} {request['pagePath']} ({response.status} {status_message}) [{processing_time} ms]"
+        f"> {request.method} {request.uri} ({response.status} {status_message}) [{processing_time} ms]"
     )
 
 
