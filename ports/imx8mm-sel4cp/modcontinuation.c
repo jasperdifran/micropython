@@ -189,7 +189,7 @@ MP_DEFINE_CONST_FUN_OBJ_0(continuation_stat_obj, py_continuation_stat);
 STATIC mp_obj_t py_continuation_getstatus(void)
 {
     printf("GEtting stastus\n");
-    return MP_OBJ_NEW_SMALL_INT(status);
+    return mp_obj_new_int(status);
 }
 
 MP_DEFINE_CONST_FUN_OBJ_0(continuation_getstatus_obj, py_continuation_getstatus);
