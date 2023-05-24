@@ -119,7 +119,6 @@ if (pageReq):
     page_cont = build_page(privateData["pagePath"], page_cont, privateData["addBreadcrumbs"])
     print("Got page content len", len(page_cont))
 
-
 handle_request_cb(Writer(), Request(privateData['method'], privateData['uri'], privateData['protocol']), (page_cont, 200, contentType))
 
 # print("Got page content btyes", page_cont)

@@ -55,21 +55,8 @@ MP_DEFINE_CONST_FUN_OBJ_1(cpfs_readfile_obj, py_cpfs_readfile);
 
 STATIC mp_obj_t py_cpfs_readfileasync(mp_obj_t filename_in, mp_obj_t len_to_read)
 {
-    (void)filename_in;
-    // const char *filename = mp_obj_str_get_str(filename_in);
-    // void *data = NULL;
-    // size_t len = 0;
-
-    // stat_file("otherfile");
-
     const char *filename = mp_obj_str_get_str(filename_in);
     req_file(filename, mp_obj_get_int(len_to_read));
-
-    // MEMZIP_RESULT err = memzip_locate(filename, &data, &len);
-    // if (err != MZ_OK)
-    // {
-    //     return MP_OBJ_NEW_SMALL_INT(1);
-    // }
 
     return MP_OBJ_NEW_SMALL_INT(0);
 }

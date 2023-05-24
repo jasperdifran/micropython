@@ -166,7 +166,6 @@ STATIC mp_obj_t py_continuation_loadprivatedata(void)
 MP_DEFINE_CONST_FUN_OBJ_0(continuation_loadprivatedata_obj, py_continuation_loadprivatedata);
 
 STATIC mp_obj_t py_continuation_loaddata(void) {
-    printf("Loading data\n");
     return mp_obj_new_bytes(data, data_len);
 }
 
