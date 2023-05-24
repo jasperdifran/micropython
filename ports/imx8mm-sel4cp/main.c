@@ -64,14 +64,9 @@ int run_webserver(char *req_buf, void *private_data_arg, char *tx_buf, unsigned 
     gc_init(heap, heap + sizeof(heap));
     mp_init();
 
-    int status = pyexec_file_if_exists("websrv.py");
-    if (status != 0)
-    {
-        printf("Exited!\n");
-    }
+    pyexec_file_if_exists("websrv.py");
 
     mp_deinit();
-    printf("Post deinit!\n");
     return 0;
 }
 
@@ -91,14 +86,9 @@ int run_cont(char *py_file_to_run, int status_arg, void *data_arg, int data_arg_
     gc_init(heap, heap + sizeof(heap));
     mp_init();
 
-    int status = pyexec_file_if_exists(py_file_to_run);
-    if (status != 0)
-    {
-        printf("Exited!\n");
-    }
+    pyexec_file_if_exists(py_file_to_run);
 
     mp_deinit();
-    printf("Post deinit!\n");
     return 0;
 }
 
@@ -114,14 +104,6 @@ void gc_collect(void)
     gc_dump_info();
 }
 #endif
-
-// mp_lexer_t *mp_lexer_new_from_file(const char *filename) {
-//     mp_raise_OSError(MP_ENOENT);
-// }
-
-// mp_import_stat_t mp_import_stat(const char *path) {
-//     return MP_IMPORT_STAT_NO_EXIST;
-// }
 
 void nlr_jump_fail(void *val)
 {

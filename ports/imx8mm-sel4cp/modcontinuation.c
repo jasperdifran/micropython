@@ -31,11 +31,6 @@ STATIC mp_obj_t py_continuation_info(void)
 
 MP_DEFINE_CONST_FUN_OBJ_0(continuation_info_obj, py_continuation_info);
 
-// STATIC mp_obj_t py_continuation_storereq()
-// {
-//     void *data = cont_data_store;
-// }
-
 /**
  * @brief Expect a JSON string which we can simply copy to private_data. Should be under 4k!
  *
@@ -44,7 +39,6 @@ MP_DEFINE_CONST_FUN_OBJ_0(continuation_info_obj, py_continuation_info);
  */
 STATIC mp_obj_t py_continuation_storeprivatedata(mp_obj_t data)
 {
-    printf("Storing private data\n");
     private_data_t *priv = (private_data_t *)private_data;
     priv->page_req = mp_obj_get_int(mp_obj_dict_get(data, mp_obj_new_str("page_req", 8)));
     priv->start_time = mp_obj_get_int(mp_obj_dict_get(data, mp_obj_new_str("start_time", 10)));
@@ -98,48 +92,8 @@ STATIC mp_obj_t py_continuation_storeprivatedata(mp_obj_t data)
 
     return MP_OBJ_SMALL_INT_VALUE(0);
 }
-// {
-//     // printf("Storing request\n");
-//     // strcpy(private_data, mp_obj_str_get_str(o_in));
-//     // return MP_OBJ_SMALL_INT_VALUE(0);
-
-//     printf("Storing request\n");
-//     const char *method = mp_obj_str_get_str(mp_obj_dict_get(o_in, mp_obj_new_str("method", 6)));
-//     if (method == NULL)
-//     {
-//         printf("Method is null\n");
-//     }
-//     else
-//     {
-//         printf("Method is not null\n");
-//         printf(method);
-//     }
-//     const char *path = mp_obj_str_get_str(mp_obj_dict_get(o_in, mp_obj_new_str("path", 4)));
-//     if (path == NULL)
-//     {
-//         printf("Path is null\n");
-//     }
-//     else
-//     {
-//         printf("Path is not null\n");
-//         printf(path);
-//     }
-
-//     printf("\nGot the method and path\n");
-//     req_data_t *req = (req_data_t *)private_data;
-//     int methodlen = strlen(method);
-//     int pathlen = strlen(path);
-//     req->method = (char *)req + sizeof(req_data_t);
-//     strcpy(req->method, method);
-//     req->method[methodlen] = '\0';
-//     req->path = req->method + methodlen + 1;
-//     strcpy(req->path, path);
-//     req->path[pathlen] = '\0';
-//     return MP_OBJ_SMALL_INT_VALUE(0);
-// }
 
 MP_DEFINE_CONST_FUN_OBJ_1(continuation_storeprivatedata_obj, py_continuation_storeprivatedata);
-// STATIC mp_obj_continuation_t py_continuation_loadreq
 
 /**
  * @brief Returns whatever data is sitting in private_data. This is a JSON string.
@@ -187,7 +141,6 @@ MP_DEFINE_CONST_FUN_OBJ_0(continuation_stat_obj, py_continuation_stat);
 
 STATIC mp_obj_t py_continuation_getstatus(void)
 {
-    printf("GEtting stastus\n");
     return mp_obj_new_int(status);
 }
 
@@ -195,7 +148,6 @@ MP_DEFINE_CONST_FUN_OBJ_0(continuation_getstatus_obj, py_continuation_getstatus)
 
 STATIC mp_obj_t py_continuation_finish(void)
 {
-    printf("Completing continuation\n");
     request_done = 1;
     return mp_const_none;
 }
