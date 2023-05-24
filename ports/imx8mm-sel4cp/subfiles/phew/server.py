@@ -68,12 +68,12 @@ headers: {self.headers}"""
 
 
 class Response:
-    def __init__(self, body, status=200, headers={}):
+    def __init__(self, body:str|bytes, status:int=200, headers={}):
         self.status = status
         self.headers = headers
         self.body = body
 
-    def add_header(self, name, value):
+    def add_header(self, name:str, value):
         self.headers[name] = value
 
     def __str__(self):
@@ -321,8 +321,6 @@ def handle_request(reader, writer):
 
     request_start_time = time.ticks_ms()
 
-    print(f"Req start time {request_start_time}")
-
     request_line = reader.readline()
     try:
         method, uri, protocol = request_line.decode().split()
@@ -336,14 +334,11 @@ def handle_request(reader, writer):
 
     route = _match_route(request)
     if route:
-        print(f"Path: {request.path}")
         # continuation.storereq(request)
         response = route.call_handler(request)
         if (type(response) == tuple):
             handle_request_cb(writer, request, response)
         else:
-            print(f"Private data: {response}")
-
             # If not a tuple, then it's private data we want to store
             response["start_time"] = request_start_time
             response["headers"] = headerStr
@@ -356,10 +351,6 @@ def handle_request(reader, writer):
         handle_request_cb(writer, request, catchall_handler(request))
 
 def handle_request_cb(writer:Writer, request:Request, response):
-    print("handle_request_cb")
-    print(f"Request: {request.method} {request.uri}")
-    # print(f"Request took {time.ticks_ms() - request.start_time}ms")
-
     # if shorthand body generator only notation used then convert to tuple
     if type(response).__name__ == "generator":
         response = (response,)

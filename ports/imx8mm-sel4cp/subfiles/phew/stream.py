@@ -39,8 +39,10 @@ class Writer:
         pass
 
     def write(self, data):
-        print("Writing ", len(data), " bytes")
         cptxrx.tx(data)
+
+    def writelen(self, data, len):
+        cptxrx.txlen(data, len)
 
     def writefile(self, file):
         cptxrx.txfile(file)

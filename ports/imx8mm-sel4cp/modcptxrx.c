@@ -1,7 +1,8 @@
 #include "py/builtin.h"
 #include "py/runtime.h"
+#include "py/objarray.h"
 #include <unistd.h>
-
+#include <stdio.h>
 #include <shared/memzip/memzip.h>
 
 /**
@@ -31,15 +32,45 @@ STATIC mp_obj_t py_cptxrx_rx(void) {
 }
 MP_DEFINE_CONST_FUN_OBJ_0(cptxrx_rx_obj, py_cptxrx_rx);
 
-STATIC mp_obj_t py_cptxrx_tx(mp_obj_t buf_in) {
-    // Copy from str to data_buf
-    const char *str = mp_obj_str_get_str(buf_in);
+STATIC mp_obj_t py_cptxrx_txlen(mp_obj_t buf_in, mp_obj_t len)
+{
+    size_t obj_data_len;
+    const char *obj_data = mp_obj_str_get_data(buf_in, &obj_data_len);
+    size_t requested_tx_len = mp_obj_get_int(len);
+
+    const size_t len_to_write = MIN(obj_data_len, requested_tx_len);
+
     int bytes_written = 0;
-    while (str[bytes_written] != '\0') {
-        tx_buffer[*tx_length + bytes_written] = str[bytes_written];
+    while (bytes_written < len_to_write)
+    {
+        tx_buffer[*tx_length + bytes_written] = obj_data[bytes_written];
         bytes_written++;
     }
+
     *tx_length += bytes_written;
+
+    // NULL termination not super necessary, just to be on the safe side
+    tx_buffer[*tx_length] = '\0';
+
+    return MP_OBJ_NEW_SMALL_INT(0);
+}
+MP_DEFINE_CONST_FUN_OBJ_2(cptxrx_txlen_obj, py_cptxrx_txlen);
+
+STATIC mp_obj_t py_cptxrx_tx(mp_obj_t buf_in) {
+    // Copy from str to data_buf
+    size_t obj_data_len;
+    const char *obj_data = mp_obj_str_get_data(buf_in, &obj_data_len);
+
+    int bytes_written = 0;
+    while (bytes_written < obj_data_len)
+    {
+        tx_buffer[*tx_length + bytes_written] = obj_data[bytes_written];
+        bytes_written++;
+    }
+
+    *tx_length += bytes_written;
+
+    // NULL termination not super necessary, just to be on the safe side
     tx_buffer[*tx_length] = '\0';
 
     return MP_OBJ_NEW_SMALL_INT(0);
@@ -99,12 +130,13 @@ STATIC mp_obj_t py_cptxrx_txfilerange(mp_obj_t filename_in, mp_obj_t start_in, m
 MP_DEFINE_CONST_FUN_OBJ_3(cptxrx_txfilerange_obj, py_cptxrx_txfilerange);
 
 STATIC const mp_rom_map_elem_t mp_module_cptxrx_globals_table[] = {
-    { MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_cptxrx) },
-    { MP_ROM_QSTR(MP_QSTR_info), MP_ROM_PTR(&cptxrx_info_obj) },
-    { MP_ROM_QSTR(MP_QSTR_rx), MP_ROM_PTR(&cptxrx_rx_obj) },
-    { MP_ROM_QSTR(MP_QSTR_tx), MP_ROM_PTR(&cptxrx_tx_obj) },
-    { MP_ROM_QSTR(MP_QSTR_txfile), MP_ROM_PTR(&cptxrx_txfile_obj) },
-    { MP_ROM_QSTR(MP_QSTR_txfilerange), MP_ROM_PTR(&cptxrx_txfilerange_obj) },
+    {MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_cptxrx)},
+    {MP_ROM_QSTR(MP_QSTR_info), MP_ROM_PTR(&cptxrx_info_obj)},
+    {MP_ROM_QSTR(MP_QSTR_rx), MP_ROM_PTR(&cptxrx_rx_obj)},
+    {MP_ROM_QSTR(MP_QSTR_tx), MP_ROM_PTR(&cptxrx_tx_obj)},
+    {MP_ROM_QSTR(MP_QSTR_txlen), MP_ROM_PTR(&cptxrx_txlen_obj)},
+    {MP_ROM_QSTR(MP_QSTR_txfile), MP_ROM_PTR(&cptxrx_txfile_obj)},
+    {MP_ROM_QSTR(MP_QSTR_txfilerange), MP_ROM_PTR(&cptxrx_txfilerange_obj)},
 
 };
 

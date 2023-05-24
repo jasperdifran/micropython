@@ -106,22 +106,11 @@ def build_page(pagePath, pageContent, addBreadcrumbs=True):
 
 
 privateData = continuation.loadprivatedata()
-print("Got request", privateData["page_req"])
-print("Got request", privateData["start_time"])
-print("Got privateDatauest", privateData["pagePath"])
-print("got privateDatauest", privateData["method"])
 page_cont = continuation.loaddata()
 pageReq = privateData["page_req"]
 
 contentType = content_type_map[privateData["pagePath"].split(".")[-1]] if not pageReq else "text/html"
 if (pageReq):
-    print("Got page content len", len(page_cont))
     page_cont = build_page(privateData["pagePath"], page_cont, privateData["addBreadcrumbs"])
-    print("Got page content len", len(page_cont))
 
 handle_request_cb(Writer(), Request(privateData['method'], privateData['uri'], privateData['protocol']), (page_cont, 200, contentType))
-
-# print("Got page content btyes", page_cont)
-# print("Got page content", page_cont.decode())
-
-# print(build_page(req["uri"] if req["uri"] != "/" else "index", page_cont, False).decode())

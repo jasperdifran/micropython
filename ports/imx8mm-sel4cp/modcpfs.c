@@ -36,12 +36,6 @@ STATIC mp_obj_t py_cpfs_readfile(mp_obj_t filename_in)
     void *data = NULL;
     size_t len = 0;
 
-    // stat_file("otherfile");
-
-    // printf("Reading a file, about to notify\n");
-    // req_file("somfile");
-    // printf("Notified\n");
-
     MEMZIP_RESULT err = memzip_locate(filename, &data, &len);
     if (err != MZ_OK)
     {
@@ -71,7 +65,6 @@ STATIC mp_obj_t py_cpfs_stat(mp_obj_t filename_in)
 
     if (memzip_stat(filename, &res) == MZ_NO_FILE)
     {
-        // mp_obj_print_exception(&mp_plat_print, mp_obj_new_str("File not found", 14));
         return MP_OBJ_NEW_SMALL_INT(1);
     }
 
