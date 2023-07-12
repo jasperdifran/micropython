@@ -30,7 +30,7 @@ typedef struct
 
 int run_webserver(char *req_buf, void *private_data, char *tx_buf, unsigned int *tx_len);
 int run_cont(char *py_file_to_run, int status, void *data, int data_len, void *private_data, char *tx_buf, unsigned int *tx_len);
-void imx_putc(uint8_t ch);
+void imx_putc(char ch);
 
 // These should be asking for private data, nfs data, a place to write response to and a pointer to a length variable for the response
 // From run_webserver and run_cont we return 0 if we are done with the request, 1 if we are waiting on a continuation

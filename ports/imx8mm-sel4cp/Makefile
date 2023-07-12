@@ -15,17 +15,20 @@ ifeq ($(CROSS), 1)
 CROSS_COMPILE ?= aarch64-none-elf-
 endif
 
+MUSLLIBC = $(TOP)/../musllibc/build/include
+
 INC += -I.
 INC += -I$(TOP)
 INC += -I$(BUILD)
 INC += -Iinclude
+INC += -I$(MUSLLIBC)
 
 ifeq ($(CROSS), 1)
 DFU = $(TOP)/tools/dfu.py
 PYDFU = $(TOP)/tools/pydfu.py
 # CFLAGS_CORTEX_M4 = -mthumb -mtune=cortex-m4 -mcpu=cortex-m4 -msoft-float -fsingle-precision-constant -Wdouble-promotion -Wfloat-conversion
-CFLAGS = $(INC) -Wall -Werror -std=c99 -fPIC -nostdlib $(COPT) #$(CFLAGS_CORTEX_M4)
-LDFLAGS = -nostdlib -r #-fPIC # -shared -ffreestanding 
+CFLAGS = $(INC) -Wall -Werror -std=c99 -fPIC -nostdlib -nostdinc -isystem=$(MUSLLIBC) $(COPT) #$(CFLAGS_CORTEX_M4)
+LDFLAGS = -nostdlib -r #-fPIC -shared -ffreestanding 
 else
 LD = gcc
 CFLAGS = $(INC)  -Wall -Werror -Wdouble-promotion -Wfloat-conversion -std=c99 $(COPT)
@@ -113,5 +116,7 @@ run:
 	  $(BUILD)/websrv.elf; \
 	  echo "Exit status: $$?"; \
 	  stty $$saved_
+
+$(shell mkdir -p $(BUILD))
 
 include $(TOP)/py/mkrules.mk
